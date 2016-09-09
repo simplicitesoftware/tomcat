@@ -1,6 +1,7 @@
 **/Thumbs.db
 **/*.bak
-tomcat/temp
-tomcat/logs
-tomcat/work
-tomcat/webapps
+temp
+logs
+work
+webapps
+data
