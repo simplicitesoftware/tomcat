@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# Tomcat Control Script
+#
+# chkconfig: 2345 55 25
+#
+# description:  Start up the tomcat engine.
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=$?
+
+JAVA_HOME=/usr/lib/jvm/java-1.8.0
+export JAVA_HOME
+
+PATH=$JAVA_HOME/bin:$PATH
+export PATH
+
+TOMCAT_USER="simplicite"
+TOMCAT_HOME="/home/$TOMCAT_USER/tomcat"
+
+#TOMCAT_UID=`id -u $TOMCAT_USER`
+#JAVA_OPTS="-Dtomcat.adminport=${TOMCAT_UID}5 -Dtomcat.httpport=${TOMCAT_UID}8 -Dtomcat.httpsport=${TOMCAT_UID}3"
+JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443"
+
+JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=/home/$TOMCAT_USER/git -Dfile.encoding=UTF-8"
+
+# Small
+#JAVA_OPTS="-Xms256m -Xmx512m"
+# Medium
+JAVA_OPTS="-Xms512m -Xmx1024m"
+# Large
+#JAVA_OPTS="-Xms1024m -Xmx2048m"
+
+export JAVA_OPTS
+
+CATALINA_PID=$TOMCAT_HOME/catalina.pid
+export CATALINA_PID
+
+case "$1" in
+start)
+    echo "Starting tomcat engine"
+    cd $TOMCAT_HOME/bin
+    /bin/su $TOMCAT_USER -c "/bin/sh ./startup.sh"
+    ;;
+stop)
+    echo "Stopping tomcat engine"
+    cd $TOMCAT_HOME/bin
+    /bin/su $TOMCAT_USER -c "/bin/sh ./shutdown.sh"
+    cd ..
+    rm -fr conf/Catalina work/Catalina $CATALINA_PID
+    ;;
+*)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit $RETVAL
