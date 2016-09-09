@@ -20,6 +20,15 @@ Before launching Tomcat:
 
 	export JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443 $JAVA_OPTS"
 
+Upgrade
+-------
+
+To upgrade:
+
+* Stop Tomcat
+* Pull/checkout changes on the Git repository
+* Restart Tomcat
+
 Sample init script
 ------------------
 
