@@ -15,6 +15,7 @@ Usage
 Before launching Tomcat:
 
 * make sure to create the `temp`, `logs` and `webapps`folders (and deploy web applications, at least a `ROOT` web application, in this last folder)
+  NB: these 3 folders are excluded of Git repository by entries in the `.gitignore` file
 * define the **JVM properties** the `conf/server.xml` file is expecting by setting the `JAVA_OPTS` environment variable:
 
 	export JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443 $JAVA_OPTS"
