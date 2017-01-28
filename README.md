@@ -1,5 +1,5 @@
-Tomcat for Simplicit&eacute;&reg; sandboxes
-===========================================
+Tomcat for Simplicit&eacute;&reg;
+=================================
 
 This repository contains an optimized and customized version of Apache Tomcat&reg; suitable for Simplicitt&eacute;&reg; sandboxes
 
