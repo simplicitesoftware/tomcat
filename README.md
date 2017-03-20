@@ -18,7 +18,7 @@ Before launching Tomcat:
   NB: these 3 folders are excluded of Git repository by entries in the `.gitignore` file
 * define the **JVM properties** the `conf/server.xml` file is expecting by setting the `JAVA_OPTS` environment variable:
 
-	export JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443 $JAVA_OPTS"
+	export JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443 -Dtomcat.ajpport=8009 $JAVA_OPTS"
 
 Upgrade
 -------
@@ -58,8 +58,8 @@ TOMCAT_USER="simplicite"
 TOMCAT_HOME="/home/$TOMCAT_USER/tomcat"
 
 #TOMCAT_UID=`id -u $TOMCAT_USER`
-#JAVA_OPTS="-Dtomcat.adminport=${TOMCAT_UID}5 -Dtomcat.httpport=${TOMCAT_UID}8 -Dtomcat.httpsport=${TOMCAT_UID}3"
-JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443"
+#JAVA_OPTS="-Dtomcat.adminport=${TOMCAT_UID}5 -Dtomcat.httpport=${TOMCAT_UID}8 -Dtomcat.httpsport=${TOMCAT_UID}3 -Dtomcat.ajpport=${TOMCAT_UID}9"
+JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443" -Dtomcat.ajpport=8009"
 
 JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=/home/$TOMCAT_USER/git -Dfile.encoding=UTF-8"
 
