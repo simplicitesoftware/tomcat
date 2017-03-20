@@ -60,7 +60,7 @@
 
     <Connector port="${tomcat.httpport}" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="443" maxPostSize="-1"/>
     <Connector port="${tomcat.httpsport}" protocol="HTTP/1.1" connectionTimeout="20000" proxyPort="443" scheme="https" secure="true" maxPostSize="-1"/>
-    <!-- Connector port="${tomcat.ajpport}" protocol="AJP/1.3" redirectPort=443/ -->
+    <!-- Connector port="${tomcat.ajpport}" protocol="AJP/1.3" redirectPort="443"/ -->
 
     <!-- A "Connector" represents an endpoint by which requests are received
          and responses are returned. Documentation at :
