@@ -100,3 +100,4 @@ exit $RETVAL
 And enable this init script by:
 
 	chkconfig tomcat on
+
