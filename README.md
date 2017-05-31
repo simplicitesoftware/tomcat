@@ -1,7 +1,7 @@
 Tomcat for Simplicit&eacute;&reg;
 =================================
 
-This repository contains an optimized and customized version of Apache Tomcat&reg; suitable for Simplicitt&eacute;&reg; sandboxes
+This repository contains an optimized and customized version of Apache Tomcat&reg; suitable for Simplicit&eacute;&reg; instances
 
 The default webapps have been removed, other changes are in the `conf` folder and 3 additional JARs have been included in the `lib` folder:
 
