@@ -18,10 +18,11 @@ export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT
 [ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
 cd $TOMCAT_ROOT/bin
 ./startup.sh
+cd ..
 
 if [ "$1" = "-t" ]
 then
-	LOG=$TOMCAT_ROOT/logs/catalina.out
-	while [ ! -f $LOG ]; do sleep 1; done
+	LOG=logs/catalina.out
+	while [ ! -f $LOG ]; do echo -n "."; sleep 1; done
 	tail -f $LOG
 fi
