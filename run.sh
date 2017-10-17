@@ -15,14 +15,13 @@ then
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
 	echo "Database vendor: $DB_VENDOR"
-	
 	if [ $DB_VENDOR = "mysql" ]
 	then
 		echo "exit" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME
 		RET=$?
 		if [ $RET -ne 0 ]
 		then
-			echo "Unable to connect to database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER" >&2
+			echo "Unable to connect to database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
 			exit 1
 		fi
 		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
@@ -30,17 +29,17 @@ then
 		then
 			if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp ]
 			then
-				echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_USER..."
+				echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_NAME / $DB_USER..."
 				mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp
 				RET=$?
 				if [ $RET -ne 0 ]
 				then
-					echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER" >&2
+					echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
 					exit 3
 				fi
 				echo "Done"
 			else
-				echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER" >&2
+				echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
 				exit 2
 			fi
 		fi
@@ -48,7 +47,32 @@ then
 		JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME"
 	elif [ $DB_VENDOR = "postgresql" ]
 	then
-		# TODO: check database and load dump if empty (see above)
+		echo "\q" | PGPASSWORD=$DB_PASSWORD psql -q -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
+		RET=$?
+		if [ $RET -ne 0 ]
+		then
+			echo "Unable to connect to database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+			exit 1
+		fi
+		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
+		if [ "$EXISTS" = "" ]
+		then
+			if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp ]
+			then
+				echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_NAME / $DB_USER..."
+				PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp
+				RET=$?
+				if [ $RET -ne 0 ]
+				then
+					echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+					exit 3
+				fi
+				echo "Done"
+			else
+				echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+				exit 2
+			fi
+		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgressql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME"
 	fi
