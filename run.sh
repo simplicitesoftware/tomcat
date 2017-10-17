@@ -4,15 +4,36 @@ export JAVA_HOME=/usr/lib/jvm/java-1.8.0
 export PATH=$JAVA_HOME/bin:$PATH
 
 [ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
-export TOMCAT_ROOT
-[ "$TOMCAT_ADMIN_PORT" = "" ] && TOMCAT_ADMIN_PORT=8005
-export TOMCAT_ADMIN_PORT
-[ "$TOMCAT_HTTP_PORT" = "" ] && TOMCAT_HTTP_PORT=8080
-export TOMCAT_HTTP_PORT
-[ "$TOMCAT_HTTPS_PORT" = "" ] && TOMCAT_HTTPS_PORT=8443
-export TOMCAT_HTTPS_PORT
+echo "Tomcat root: $TOMCAT_ROOT"
 
-export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dtomcat.adminport=$TOMCAT_ADMIN_PORT -Dtomcat.httpport=$TOMCAT_HTTP_PORT -Dtomcat.httpsport=$TOMCAT_HTTPS_PORT"
+export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dplatform.autoupgrade=true"
+export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
+
+[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
+[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
+[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
+echo "Database vendor: $DB_VENDOR"
+
+if [ $DB_VENDOR = "mysql" ]
+then
+	N=`echo "select count(*) from m_system" | mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD`
+	RET=$?
+	if [ $RET -ne 0 -o "$N" = "0" ]
+	then
+		echo "Database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_USER is not ready
+		exit 1"
+	fi
+	sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+	JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME"
+elif [ $DB_VENDOR = "postgresql" ]
+then
+	# TODO: check database and load dump if empty
+	sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgressql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+	JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME"
+fi
+
+echo "Java options: $JAVA_OPTS"
+
 [ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
 [ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
 [ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
@@ -26,3 +47,5 @@ then
 	while [ ! -f $LOG ]; do echo -n "."; sleep 1; done
 	tail -f $LOG
 fi
+
+exit 0
