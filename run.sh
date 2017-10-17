@@ -16,12 +16,25 @@ echo "Database vendor: $DB_VENDOR"
 
 if [ $DB_VENDOR = "mysql" ]
 then
-	N=`echo "select count(*) from m_system" | mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD`
+	echo "exit" | mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD
 	RET=$?
-	if [ $RET -ne 0 -o "$N" = "0" ]
+	if [ $RET -ne 0 ]
 	then
-		echo "Database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_USER is not ready
-		exit 1"
+		echo "Unable to connect to database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER"
+		exit 1
+	fi
+	N=`echo "select count(*) from m_system" | mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD`
+	if [ "$N" = "" -o "$N" = "0" ]
+	then
+		if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp ]
+		then
+			echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_USER..."
+			mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp
+			echo "Done"
+		else
+			echo "Unable to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER"
+			exit 2
+		fi
 	fi
 	sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 	JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME"
