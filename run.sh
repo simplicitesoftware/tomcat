@@ -6,6 +6,11 @@ export PATH=$JAVA_HOME/bin:$PATH
 [ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
 echo "Tomcat root: $TOMCAT_ROOT"
 
+[ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
+[ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
+[ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
+[ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
+
 export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
 
@@ -83,9 +88,6 @@ fi
 
 echo "Java options: $JAVA_OPTS"
 
-[ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
-[ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
-[ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
 cd $TOMCAT_ROOT/bin
 ./startup.sh
 cd ..
