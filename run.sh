@@ -38,7 +38,7 @@ then
 			fi
 			echo "Done"
 		else
-			echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER" > &2
+			echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_USER" >&2
 			exit 2
 		fi
 	fi
