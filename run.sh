@@ -22,6 +22,7 @@ then
 	echo "Database vendor: $DB_VENDOR"
 	if [ $DB_VENDOR = "mysql" ]
 	then
+		[ "$DB_PORT" = "" ] && DB_PORT=3306
 		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		echo "exit" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME
 		RET=$?
@@ -59,6 +60,7 @@ then
 		JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME"
 	elif [ $DB_VENDOR = "postgresql" ]
 	then
+		[ "$DB_PORT" = "" ] && DB_PORT=5432
 		echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		echo "\q" | PGPASSWORD=$DB_PASSWORD psql -q -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
 		RET=$?
