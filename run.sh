@@ -32,19 +32,25 @@ then
 		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
-			if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp ]
+			if [ "$DB_SETUP" = "true"]
 			then
-				echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_NAME / $DB_USER..."
-				mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp
-				RET=$?
-				if [ $RET -ne 0 ]
+				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp ]
 				then
-					echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+					echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_NAME / $DB_USER..."
+					mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp
+					RET=$?
+					if [ $RET -ne 0 ]
+					then
+						echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+						exit 4
+					fi
+					echo "Done"
+				else
+					echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
 					exit 3
 				fi
-				echo "Done"
 			else
-				echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+				echo Database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER is not setup" >&2
 				exit 2
 			fi
 		fi
@@ -62,19 +68,25 @@ then
 		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
-			if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp ]
+			if [ "$DB_SETUP" = "true"]
 			then
-				echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_NAME / $DB_USER..."
-				PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp
-				RET=$?
-				if [ $RET -ne 0 ]
+				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp ]
 				then
-					echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
-					exit 3
+					echo "Loading database $DB_VENDOR / $DM_HOST / $DB_PORT / $DB_NAME / $DB_USER..."
+					PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp
+					RET=$?
+					if [ $RET -ne 0 ]
+					then
+						echo "Load database error on $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+						exit 3
+					fi
+					echo "Done"
+				else
+					echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+					exit 2
 				fi
-				echo "Done"
 			else
-				echo "No dump to load database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER" >&2
+				echo Database $DB_VENDOR / $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER is not setup" >&2
 				exit 2
 			fi
 		fi
