@@ -32,7 +32,7 @@ then
 		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
-			if [ "$DB_SETUP" = "true"]
+			if [ "$DB_SETUP" = "true" ]
 			then
 				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp ]
 				then
@@ -68,7 +68,7 @@ then
 		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
-			if [ "$DB_SETUP" = "true"]
+			if [ "$DB_SETUP" = "true" ]
 			then
 				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp ]
 				then
