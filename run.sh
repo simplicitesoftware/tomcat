@@ -2,7 +2,8 @@
 
 if [ "$JAVA_HOME" = "" ]
 then
-	export JAVA_HOME=/usr/lib/jvm/java-1.8.0
+	echo "JAVA_HOME is not set" >&2
+	exit 1
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
@@ -32,7 +33,7 @@ then
 		if [ $RET -ne 0 ]
 		then
 			echo "Unable to connect to database" >&2
-			exit 1
+			exit 2
 		fi
 		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
 		if [ "$EXISTS" = "" ]
@@ -47,16 +48,16 @@ then
 					if [ $RET -ne 0 ]
 					then
 						echo "Load database error" >&2
-						exit 4
+						exit 5
 					fi
 					echo "Done"
 				else
 					echo "No dump to load database" >&2
-					exit 3
+					exit 4
 				fi
 			else
 				echo "Database is not setup" >&2
-				exit 2
+				exit 3
 			fi
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
@@ -70,7 +71,7 @@ then
 		if [ $RET -ne 0 ]
 		then
 			echo "Unable to connect to database" >&2
-			exit 1
+			exit 2
 		fi
 		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
 		if [ "$EXISTS" = "" ]
@@ -85,16 +86,16 @@ then
 					if [ $RET -ne 0 ]
 					then
 						echo "Load database error" >&2
-						exit 3
+						exit 5
 					fi
 					echo "Done"
 				else
 					echo "No dump to load database" >&2
-					exit 2
+					exit 4
 				fi
 			else
 				echo "Database is not setup" >&2
-				exit 2
+				exit 3
 			fi
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
