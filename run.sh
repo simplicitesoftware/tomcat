@@ -1,6 +1,9 @@
 #!/bin/bash
 
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0
+if [ "$JAVA_HOME" = "" ]
+then
+	export JAVA_HOME=/usr/lib/jvm/java-1.8.0
+fi
 export PATH=$JAVA_HOME/bin:$PATH
 
 [ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
