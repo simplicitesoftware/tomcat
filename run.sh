@@ -100,6 +100,18 @@ then
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME"
+	elif [ $DB_VENDOR = "oracle" ]
+	then
+		[ "$DB_PORT" = "" ] && DB_PORT=1521
+		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
+	elif [ $DB_VENDOR = "sqlserver" ]
+	then
+		[ "$DB_PORT" = "" ] && DB_PORT=1433
+		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- sqlserver --><!-- Resource/<!-- sqlserver --><Resource/;s/<\/Resource --><!-- sqlserver -->/<\/Resource><!-- sqlserver -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		JAVA_OPTS="$JAVA_OPTS -Dsqlserver.user=$DB_USER -Dsqlserver.password=$DB_PASSWORD -Dsqlserver.host=$DB_HOST -Dsqlserver.port=$DB_PORT -Dsqlserver.database=$DB_NAME"
 	fi
 else
 	mkdir $TOMCAT_ROOT/webapps/ROOT
