@@ -118,6 +118,8 @@ else
 	echo "It works!" > $TOMCAT_ROOT/webapps/ROOT/index.jsp
 fi
 
+sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml
+
 echo "Java options: $JAVA_OPTS"
 
 cd $TOMCAT_ROOT/bin
