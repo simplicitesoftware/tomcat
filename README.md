@@ -6,8 +6,10 @@ This repository contains an optimized and pre-configured version of Apache Tomca
 The default webapps have been removed, other changes are in the `conf` folder and 3 additional JARs have been included in the `lib` folder:
 
 - `simplicite-valves.jar` contains the optional valves that you can use along with Simplicit&eacute;
-- `mysql-connector-java-x.y.z-bin` the MySQL JDBC driver
-- `postgresql-x.y.z` the PostgreSQL JDBC driver
+- `mysql-connector-java-x.y.z-bin.jar` the MySQL JDBC driver
+- `postgresql-x.y.z.jar` the PostgreSQL JDBC driver
+- `ojdbc6.jar` the Oracle JDBC driver
+- `mssql-jdbc-x.y.z.jre8` the SQLServer JDBC driver
 
 Usage
 -----
@@ -100,4 +102,3 @@ exit $RETVAL
 And enable this init script by:
 
 	chkconfig tomcat on
-
