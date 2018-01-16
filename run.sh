@@ -115,7 +115,7 @@ then
 	fi
 else
 	mkdir $TOMCAT_ROOT/webapps/ROOT
-	cat << EOF > $TOMCAT_ROOT/webapps/ROOT/index.jsp
+	cat > $TOMCAT_ROOT/webapps/ROOT/index.jsp << EOF
 <!DOCTYPE html>
 <html>
 <head>
