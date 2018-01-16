@@ -115,7 +115,24 @@ then
 	fi
 else
 	mkdir $TOMCAT_ROOT/webapps/ROOT
-	echo "It works!" > $TOMCAT_ROOT/webapps/ROOT/index.jsp
+	cat << EOF > $TOMCAT_ROOT/webapps/ROOT/index.jsp
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>It works!</title>
+</head>
+<body>
+<pre>
+OS: <%= System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") %>
+JVM: <%= System.getProperty("java.version") + " " + System.getProperty("java.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") %>
+Encoding: <%= System.getProperty("file.encoding") %>
+Server: <%= request.getServletContext().getServerInfo() %>
+System date: <%= new java.util.Date() %>
+</pre>
+</body>
+</html>
+EOF
 fi
 
 sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml
