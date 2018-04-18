@@ -17,6 +17,7 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.ajpport=${TOMCAT_AJP_PORT:-8009}"
+[ "$TOMCAT_TIMEZONE" != "" ] && JAVA_OPTS="$JAVA_OPTS -Duser.timezone=$TOMCAT_TIMEZONE"
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
@@ -104,14 +105,16 @@ then
 	then
 		[ "$DB_PORT" = "" ] && DB_PORT=1521
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		# TODO: Load database if needed
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
-	elif [ $DB_VENDOR = "sqlserver" ]
+	elif [ $DB_VENDOR = "mssql" ]
 	then
 		[ "$DB_PORT" = "" ] && DB_PORT=1433
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- sqlserver --><!-- Resource/<!-- sqlserver --><Resource/;s/<\/Resource --><!-- sqlserver -->/<\/Resource><!-- sqlserver -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
-		JAVA_OPTS="$JAVA_OPTS -Dsqlserver.user=$DB_USER -Dsqlserver.password=$DB_PASSWORD -Dsqlserver.host=$DB_HOST -Dsqlserver.port=$DB_PORT -Dsqlserver.database=$DB_NAME"
+		# TODO: Load database if needed
+		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
 	fi
 else
 	mkdir $TOMCAT_ROOT/webapps/ROOT

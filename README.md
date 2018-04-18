@@ -65,6 +65,9 @@ JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=844
 
 JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=/home/$TOMCAT_USER/git -Dfile.encoding=UTF-8"
 
+# To force a specific timezone
+#JAVA_OPTS="$JAVA_OPTS -Duser.timezone=..."
+
 # Small
 #JAVA_OPTS="-Xms256m -Xmx512m"
 # Medium
