@@ -21,6 +21,8 @@ export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtom
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
+	sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml
+	
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
@@ -137,8 +139,6 @@ System date: <%= new java.util.Date() %>
 </html>
 EOF
 fi
-
-sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml
 
 echo "Java options: $JAVA_OPTS"
 
