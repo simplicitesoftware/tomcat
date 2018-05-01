@@ -1,8 +1,9 @@
 #!/bin/bash
 
-if [ "$JAVA_HOME" = "" ]
+[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+if [ ! -d $JAVA_HOME ]
 then
-	echo "JAVA_HOME is not set" >&2
+	echo "JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
 	exit 1
 fi
 export PATH=$JAVA_HOME/bin:$PATH
@@ -21,8 +22,9 @@ export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtom
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
-	sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml
-	
+	LOG4J="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml"
+	[ -f $LOG4J ] && sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J
+
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
