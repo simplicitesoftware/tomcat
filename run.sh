@@ -27,6 +27,7 @@ then
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
+	[ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
 	echo "Database vendor: $DB_VENDOR"
 	if [ $DB_VENDOR = "mysql" ]
 	then
