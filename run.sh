@@ -142,6 +142,13 @@ System date: <%= new java.util.Date() %>
 EOF
 fi
 
+if [ "$JPDA" = "true" ]
+then
+	sed -i '/^exec /s/ start / jpda start /' $TOMCAT_ROOT/bin/startup.sh
+else
+	sed -i '/^exec /s/ jpda start / start /' $TOMCAT_ROOT/bin/startup.sh
+fi
+
 echo "Java options: $JAVA_OPTS"
 
 cd $TOMCAT_ROOT/bin
