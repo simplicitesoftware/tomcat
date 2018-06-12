@@ -17,13 +17,15 @@ echo "Tomcat root: $TOMCAT_ROOT"
 [ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
 
 export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dplatform.autoupgrade=true"
-export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.ajpport=${TOMCAT_AJP_PORT:-8009}"
+export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
+[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT}"
 [ "$TOMCAT_TIMEZONE" != "" ] && JAVA_OPTS="$JAVA_OPTS -Duser.timezone=$TOMCAT_TIMEZONE"
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
 	LOG4J="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml"
 	[ -f $LOG4J ] && sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J
+	[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && sed -i '/{tomcat.ajpport}/s/!-- \(.*\) --/\1/' $TOMCAT_ROOT/conf/server.xml
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
