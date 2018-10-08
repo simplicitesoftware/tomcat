@@ -1,0 +1,17 @@
+* text=auto
+*.sh text eol=lf
+*.bat text eol=crlf
+*.zip binary
+*.jar binary
+*.class binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.mp3 binary
+*.wav binary
+*.avi binary
+*.mp4 binary
+*.m4v binary
+*.webm binary
+*.flv binary
+*.swf binary
