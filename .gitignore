@@ -1,6 +1,7 @@
 **/Thumbs.db
 **/*.bak
 catalina.pid
+backup
 temp
 logs
 work
