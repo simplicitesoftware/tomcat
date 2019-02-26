@@ -138,7 +138,20 @@ JVM: <%= System.getProperty("java.version") + " " + System.getProperty("java.ven
 Encoding: <%= System.getProperty("file.encoding") %>
 Server: <%= request.getServletContext().getServerInfo() %>
 System date: <%= new java.util.Date() %>
-</pre>
+Environment variables:
+<%
+java.util.Map<String, String> env = System.getenv();
+for (String name : env.keySet())
+	out.println("\t" + name + " = " + env.get(name));
+%>System properties:
+<%
+java.util.Properties p = System.getProperties();
+java.util.Enumeration keys = p.keys();
+while (keys.hasMoreElements()) {
+	Object key = keys.nextElement();
+	out.println("\t" + key + " = " + p.get(key));
+}
+%></pre>
 </body>
 </html>
 EOF
