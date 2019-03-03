@@ -8,7 +8,7 @@ then
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`realpath $0`
 echo "Tomcat root: $TOMCAT_ROOT"
 
 [ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
@@ -16,10 +16,11 @@ echo "Tomcat root: $TOMCAT_ROOT"
 [ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
 [ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
 
-export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dplatform.autoupgrade=true"
+export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
 [ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT}"
 [ "$TOMCAT_TIMEZONE" != "" ] && JAVA_OPTS="$JAVA_OPTS -Duser.timezone=$TOMCAT_TIMEZONE"
+[ "$GIT_BASEDIR" = "" ] && JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git"
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
