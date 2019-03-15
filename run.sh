@@ -17,11 +17,10 @@ echo "Tomcat root: $TOMCAT_ROOT"
 [ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
 [ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
 
-export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dplatform.autoupgrade=true"
+export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-UTC} -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
 [ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT}"
-[ "$TOMCAT_TIMEZONE" != "" ] && JAVA_OPTS="$JAVA_OPTS -Duser.timezone=$TOMCAT_TIMEZONE"
-[ "$GIT_BASEDIR" = "" ] && JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git"
+JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git}"
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
@@ -68,6 +67,9 @@ then
 				echo "Database is not setup" >&2
 				exit 3
 			fi
+		else
+			echo "Database is not setup" >&2
+			exit 3
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME"
@@ -106,6 +108,9 @@ then
 				echo "Database is not setup" >&2
 				exit 3
 			fi
+		else
+			echo "Database is not setup" >&2
+			exit 3
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME"
