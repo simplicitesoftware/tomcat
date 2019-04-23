@@ -171,7 +171,7 @@ cd $TOMCAT_ROOT/bin
 ./startup.sh
 cd ..
 
-if [ "$1" = "-t" ]
+if [ "$1" = "-t"  -o "$1" = "--tail" ]
 then
 	LOG=logs/catalina.out
 	while [ ! -f $LOG ]; do echo -n "."; sleep 1; done
