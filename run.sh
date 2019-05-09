@@ -34,15 +34,33 @@ then
 	echo "Database vendor: $DB_VENDOR"
 	if [ $DB_VENDOR = "mysql" ]
 	then
+		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=3306
-		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		echo "exit" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME
-		RET=$?
-		if [ $RET -ne 0 ]
+		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
-			echo "Unable to connect to database" >&2
-			exit 2
+			echo "Missing database name, user and/or password" >&2
+			exit 2	
 		fi
+		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		W=${DB_WAIT:-1}
+		N=0
+		while [ $N -lt $W ]
+		do
+			N=`expr $N + 1`
+			echo "exit" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME
+			RET=$?
+			if [ $RET -ne 0 ]
+			then
+				if [ $W -eq 1 -o $N -eq $W ]
+				then
+					echo "Unable to connect to database" >&2
+					exit 3
+				else
+					echo "Waiting 5s for database ($N)"
+					sleep 5
+				fi
+			fi
+		done
 		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
@@ -56,31 +74,49 @@ then
 					if [ $RET -ne 0 ]
 					then
 						echo "Load database error" >&2
-						exit 5
+						exit 6
 					fi
 					echo "Done"
 				else
 					echo "No dump to load database" >&2
-					exit 4
+					exit 5
 				fi
 			else
 				echo "Database is not setup" >&2
-				exit 3
+				exit 4
 			fi
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME"
 	elif [ $DB_VENDOR = "postgresql" ]
 	then
+		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=5432
-		echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		echo "\q" | PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
-		RET=$?
-		if [ $RET -ne 0 ]
+		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
-			echo "Unable to connect to database" >&2
-			exit 2
+			echo "Missing database name, user and/or password" >&2
+			exit 2	
 		fi
+		echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		W=${DB_WAIT:-1}
+		N=0
+		while [ $N -lt $W ]
+		do
+			N=`expr $N + 1`
+			echo "\q" | PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
+			RET=$?
+			if [ $RET -ne 0 ]
+			then
+				if [ $W -eq 1 -o $N -eq $W ]
+				then
+					echo "Unable to connect to database" >&2
+					exit 3
+				else
+					echo "Waiting 5s for database ($N)"
+					sleep 5
+				fi
+			fi
+		done
 		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
@@ -94,22 +130,23 @@ then
 					if [ $RET -ne 0 ]
 					then
 						echo "Load database error" >&2
-						exit 5
+						exit 6
 					fi
 					echo "Done"
 				else
 					echo "No dump to load database" >&2
-					exit 4
+					exit 5
 				fi
 			else
 				echo "Database is not setup" >&2
-				exit 3
+				exit 4
 			fi
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME"
 	elif [ $DB_VENDOR = "oracle" ]
 	then
+		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=1521
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		# TODO: Load database if needed
@@ -117,6 +154,7 @@ then
 		JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
 	elif [ $DB_VENDOR = "mssql" ]
 	then
+		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=1433
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		# TODO: Load database if needed
