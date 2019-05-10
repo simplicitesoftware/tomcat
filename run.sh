@@ -26,10 +26,10 @@ if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
 	LOG4J="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml"
 	[ -f $LOG4J ] && sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J
-	[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && sed -i '/{tomcat.ajpport}/s/!-- \(.*\) --/\1/' $TOMCAT_ROOT/conf/server.xml
+	[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && sed -i 's/<!-- AJP/<!-- AJP -->/;s/AJP -->/<!-- AJP -->/' $TOMCAT_ROOT/conf/server.xml
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
-	[ "$DB_VENDOR" = "pgsql" ] && DB_VENDOR=postgresql
+	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
 	[ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
 	echo "Database vendor: $DB_VENDOR"
 	if [ $DB_VENDOR = "mysql" ]
@@ -64,7 +64,7 @@ then
 		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
-			if [ "$DB_SETUP" = "true" ]
+			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
 			then
 				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mysql.dmp ]
 				then
@@ -120,7 +120,7 @@ then
 		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
 		if [ "$EXISTS" = "" ]
 		then
-			if [ "$DB_SETUP" = "true" ]
+			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
 			then
 				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp ]
 				then
