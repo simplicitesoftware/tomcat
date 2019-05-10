@@ -19,6 +19,7 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
+[ ${TOMCAT_SSL_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT} -Dtomcat.sslkeystorefile=${TOMCAT_SSL_KEYSTOREFILE:-conf/server.jks} -Dtomcat.sslkeystorepassword=${TOMCAT_SSL_KEYSTOREPASSWORD:-changeit}"
 [ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT}"
 JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git}"
 
@@ -26,7 +27,8 @@ if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
 	LOG4J="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml"
 	[ -f $LOG4J ] && sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J
-	[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && sed -i 's/<!-- AJP/<!-- AJP -->/;s/AJP -->/<!-- AJP -->/' $TOMCAT_ROOT/conf/server.xml
+	[ ${TOMCAT_SSL_PORT:-0} -gt 0 ] && sed -i 's/<!-- SSL Connector/<Connector/;s/Connector SSL -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
+	[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && sed -i 's/<!-- AJP Connector/<Connector/;s/Connector AJP -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql

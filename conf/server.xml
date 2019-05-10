@@ -59,14 +59,19 @@
     -->
 
     <Connector port="${tomcat.httpport}" protocol="HTTP/1.1" redirectPort="443" maxPostSize="-1" maxThreads="200" maxConnections="-1">
-        <!-- UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/ -->
+        <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
     </Connector>
     <Connector port="${tomcat.httpsport}" protocol="HTTP/1.1" scheme="https" secure="true" maxPostSize="-1" maxThreads="200" maxConnections="-1">
-        <!-- UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/ -->
+        <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
     </Connector>
-    <!-- AJP
-    <Connector port="${tomcat.ajpport}" protocol="AJP/1.3" redirectPort="443" maxPostSize="-1"/>
-    AJP -->
+    <!-- AJP Connector port="${tomcat.ajpport}" protocol="AJP/1.3" redirectPort="443" maxPostSize="-1">
+    </Connector AJP -->
+    <!-- SSL Connector port="${tomcat.sslport}" protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https" secure="true" SSLEnabled="true" maxPostSize="-1" maxThreads="200" maxConnections="-1"
+        <SSLHostConfig>
+            <Certificate certificateKeystoreFile="${tomcat.sslkeystorefile}" certificateKeystorePassword="${tomcat.sslkeystorepassword}"/>
+        </SSLHostConfig>
+        <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
+    </Connector SSL -->
 
     <!-- A "Connector" represents an endpoint by which requests are received
          and responses are returned. Documentation at :
