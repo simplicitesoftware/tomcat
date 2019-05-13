@@ -1,5 +1,6 @@
 **/Thumbs.db
 **/*.bak
+**/*.log
 catalina.pid
 backup
 temp
