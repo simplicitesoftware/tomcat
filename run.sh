@@ -19,9 +19,11 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
-[ ${TOMCAT_SSL_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT} -Dtomcat.sslkeystorefile=${TOMCAT_SSL_KEYSTOREFILE:-conf/server.jks} -Dtomcat.sslkeystorepassword=${TOMCAT_SSL_KEYSTOREPASSWORD:-password}"
-[ ${TOMCAT_AJP_PORT:-0} -gt 0 ] && JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT}"
-JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git}"
+[ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT:-8483} -Dtomcat.sslkeystorefile=${KEYSTORE_FILE:-conf/server.jks} -Dtomcat.sslkeystorepassword=$_KEYSTORE_PASSWORD:-password}"
+[ "$AJP" = "true" -o ${TOMCAT_AJP_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT:-8009}"
+export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git}"
+
+[ "$JPDA" = "true" -o ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && export JPDA_ADDRESS=${TOMCAT_JPDA_PORT:-8000}
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
