@@ -25,6 +25,8 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/R
 
 [ "$JPDA" = "true" -o ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && export JPDA_ADDRESS=${TOMCAT_JPDA_PORT:-8000}
 
+[ "$CORS" = "true" ] && sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
 	LOG4J="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml"
