@@ -1,79 +1,102 @@
-## Welcome to Apache Tomcat!
+Tomcat for Simplicit&eacute;&reg;
+=================================
 
-### What Is It?
+This repository contains an optimized and customized version of Apache Tomcat&reg; suitable for Simplicitt&eacute;&reg; sandboxes
 
-The Apache Tomcat® software is an open source implementation of the Java
-Servlet, JavaServer Pages, Java Expression Language and Java WebSocket
-technologies. The Java Servlet, JavaServer Pages, Java Expression Language and
-Java WebSocket specifications are developed under the
-[Java Community Process](https://jcp.org/en/introduction/overview).
+The default webapps have been removed, other changes are in the `conf` folder and 3 additional JARs have been included in the `lib` folder:
 
-The Apache Tomcat software is developed in an open and participatory
-environment and released under the
-[Apache License version 2](https://www.apache.org/licenses/). The Apache Tomcat
-project is intended to be a collaboration of the best-of-breed developers from
-around the world. We invite you to participate in this open development
-project. To learn more about getting involved,
-[click here](https://tomcat.apache.org/getinvolved.html) or keep reading.
+- `simplicite-valves.jar` contains the optional valves that you can use along with Simplicit&eacute;
+- `mysql-connector-java-x.y.z-bin` the MySQL/MariaDB JDBC driver
+- `postgresql-x.y.z` the PostgreSQL JDBC driver
 
-Apache Tomcat software powers numerous large-scale, mission-critical web
-applications across a diverse range of industries and organizations. Some of
-these users and their stories are listed on the
-[PoweredBy wiki page](https://wiki.apache.org/tomcat/PoweredBy).
+Usage
+-----
 
-Apache Tomcat, Tomcat, Apache, the Apache feather, and the Apache Tomcat
-project logo are trademarks of the Apache Software Foundation.
+Before launching Tomcat:
 
-### Get It
+* make sure to create the `temp`, `logs` and `webapps`folders (and deploy web applications, at least a `ROOT` web application, in this last folder)
+  NB: these 3 folders are excluded of Git repository by entries in the `.gitignore` file
+* define the **JVM properties** the `conf/server.xml` file is expecting by setting the `JAVA_OPTS` environment variable:
 
-For every major Tomcat version there is one download page containing
-links to the latest binary and source code downloads, but also
-links for browsing the download directories and archives:
-- [Tomcat 9](https://tomcat.apache.org/download-90.cgi)
-- [Tomcat 8](https://tomcat.apache.org/download-80.cgi)
-- [Tomcat 7](https://tomcat.apache.org/download-70.cgi)
+	export JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443 -Dtomcat.ajpport=8009 $JAVA_OPTS"
 
-To facilitate choosing the right major Tomcat version one, we have provided a
-[version overview page](https://tomcat.apache.org/whichversion.html).
+Upgrade
+-------
 
-### Documentation
+To upgrade:
 
-The documentation available as of the date of this release is
-included in the docs webapp which ships with tomcat. You can access that webapp
-by starting tomcat and visiting http://localhost:8080/docs/ in your browser.
-The most up-to-date documentation for each version can be found at:
-- [Tomcat 9](https://tomcat.apache.org/tomcat-9.0-doc/)
-- [Tomcat 8](https://tomcat.apache.org/tomcat-8.5-doc/)
-- [Tomcat 7](https://tomcat.apache.org/tomcat-7.0-doc/)
+* Stop Tomcat
+* Pull/checkout changes on the Git repository
+* Restart Tomcat
 
-### Installation
+Sample init script
+------------------
 
-Please see [RUNNING.txt](RUNNING.txt) for more info.
+To automate the Tomcat start/stop create a `/etc/init.d/tomcat` init script with:
 
-### Licensing
+```sh
+#!/bin/sh
+#
+# Tomcat Control Script
+#
+# chkconfig: 2345 55 25
+#
+# description:  Start up the tomcat engine.
 
-Please see [LICENSE](LICENSE) for more info.
+# Source function library.
+. /etc/init.d/functions
 
-### Support and Mailing List Information
+RETVAL=$?
 
-* Free community support is available through the
-[tomcat-users](https://tomcat.apache.org/lists.html#tomcat-users) email list and
-a dedicated [IRC channel](https://tomcat.apache.org/irc.html) (#tomcat on
-Freenode).
+JAVA_HOME=/usr/lib/jvm/java-1.8.0
+export JAVA_HOME
 
-* If you want freely available support for running Apache Tomcat, please see the
-resources page [here](https://tomcat.apache.org/findhelp.html).
+PATH=$JAVA_HOME/bin:$PATH
+export PATH
 
-* If you want to be informed about new code releases, bug fixes,
-security fixes, general news and information about Apache Tomcat, please
-subscribe to the
-[tomcat-announce](https://tomcat.apache.org/lists.html#tomcat-announce) email
-list.
+TOMCAT_USER="simplicite"
+TOMCAT_HOME="/home/$TOMCAT_USER/tomcat"
 
-* If you have a concrete bug report for Apache Tomcat, please see the
-instructions for reporting a bug
-[here](https://tomcat.apache.org/bugreport.html).
+#TOMCAT_UID=`id -u $TOMCAT_USER`
+#JAVA_OPTS="-Dtomcat.adminport=${TOMCAT_UID}5 -Dtomcat.httpport=${TOMCAT_UID}8 -Dtomcat.httpsport=${TOMCAT_UID}3 -Dtomcat.ajpport=${TOMCAT_UID}9"
+JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443" -Dtomcat.ajpport=8009"
 
-### Contributing
+JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=/home/$TOMCAT_USER/git -Dfile.encoding=UTF-8"
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for more info.
+# Small
+#JAVA_OPTS="-Xms256m -Xmx512m"
+# Medium
+JAVA_OPTS="-Xms512m -Xmx1024m"
+# Large
+#JAVA_OPTS="-Xms1024m -Xmx2048m"
+
+export JAVA_OPTS
+
+CATALINA_PID=$TOMCAT_HOME/catalina.pid
+export CATALINA_PID
+
+case "$1" in
+start)
+    echo "Starting tomcat engine"
+    cd $TOMCAT_HOME/bin
+    /bin/su $TOMCAT_USER -c "/bin/sh ./startup.sh"
+    ;;
+stop)
+    echo "Stopping tomcat engine"
+    cd $TOMCAT_HOME/bin
+    /bin/su $TOMCAT_USER -c "/bin/sh ./shutdown.sh"
+    cd ..
+    rm -fr conf/Catalina work/Catalina $CATALINA_PID
+    ;;
+*)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit $RETVAL
+```
+
+And enable this init script by:
+
+	chkconfig tomcat on
