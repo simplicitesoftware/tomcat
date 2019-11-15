@@ -33,7 +33,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/R
 [ "$JMX" = "true" -o ${TOMCAT_JMX_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 [ "$JPDA" = "true" -o ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && export JPDA_ADDRESS=${TOMCAT_JPDA_PORT:-8000}
 [ "$CORS" = "true" ] && sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
-[ "$API_EXTRA_PATTERNS" != "" ] && sed -i "/APISessionValve/s/ extraPatterns=\".*\"\/>//;/APISessionValve/s/\/>/ extraPatterns=\"$API_EXTRA_PATTERNS\"\/>/" $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+[ "$API_EXTRA_PATTERNS" != "" ] && sed -i "/APISessionValve/s/ extraPatterns=\".*\"//g;/APISessionValve/s/\/>/ extraPatterns=\"$API_EXTRA_PATTERNS\"\/>/" $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
