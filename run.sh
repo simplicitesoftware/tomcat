@@ -175,6 +175,29 @@ then
 	fi
 else
 	mkdir $TOMCAT_ROOT/webapps/ROOT
+	mkdir $TOMCAT_ROOT/webapps/ROOT/WEB-INF
+	mkdir $TOMCAT_ROOT/webapps/ROOT/META-INF
+	cat > $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+	version="4.0">
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
+EOF
+	cat > $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Context>
+<Context useHttpOnly="false">
+	<Manager pathname=""/>
+	<JarScanner scanClassPath="false"/>
+	<Valve className="com.simplicite.tomcat.valves.APISessionValve"/>
+</Context>
+EOF
 	cat > $TOMCAT_ROOT/webapps/ROOT/index.jsp << EOF
 <!DOCTYPE html>
 <html>
