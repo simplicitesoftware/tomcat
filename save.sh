@@ -47,7 +47,7 @@ then
 			echo "Unable to connect to database" >&2
 			exit 2
 		fi
-		PGPASSWORD=$DB_PASSWORD pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME --no-owner -c > $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp
+		PGPASSWORD=$DB_PASSWORD pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME --no-owner --clean > $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-postgresql.dmp
 	elif [ $DB_VENDOR = "oracle" ]
 	then
 		[ "$DB_PORT" = "" ] && DB_PORT=1521
