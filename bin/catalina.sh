@@ -343,6 +343,10 @@ if [ "$1" = "jpda" ] ; then
   shift
 fi
 
+# TODO: Bugzilla 63815
+# This doesn't currently work (and can't be made to work) if values used in
+# CATALINA_OPTS and/or JAVA_OPTS require quoting. See:
+# https://bugs.openjdk.java.net/browse/JDK-8234808
 if [ "$1" = "debug" ] ; then
   if $os400; then
     echo "Debug command not available on OS400"
@@ -354,7 +358,7 @@ if [ "$1" = "debug" ] ; then
         echo "Using Security Manager"
       fi
       shift
-      exec "$_RUNJDB" "$LOGGING_CONFIG" $LOGGING_MANAGER "$JAVA_OPTS" "$CATALINA_OPTS" \
+      exec "$_RUNJDB" "$LOGGING_CONFIG" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS \
         -D$ENDORSED_PROP="$JAVA_ENDORSED_DIRS" \
         -classpath "$CLASSPATH" \
         -sourcepath "$CATALINA_HOME"/../../java \
@@ -365,7 +369,7 @@ if [ "$1" = "debug" ] ; then
         -Djava.io.tmpdir="$CATALINA_TMPDIR" \
         org.apache.catalina.startup.Bootstrap "$@" start
     else
-      exec "$_RUNJDB" "$LOGGING_CONFIG" $LOGGING_MANAGER "$JAVA_OPTS" "$CATALINA_OPTS" \
+      exec "$_RUNJDB" "$LOGGING_CONFIG" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS \
         -D$ENDORSED_PROP="$JAVA_ENDORSED_DIRS" \
         -classpath "$CLASSPATH" \
         -sourcepath "$CATALINA_HOME"/../../java \
