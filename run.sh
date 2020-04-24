@@ -19,6 +19,10 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
+if [ "$GZIP" = "true" ]
+then
+	sed -i 's/ compression="on"/compression="off"/g' $TOMCAT_ROOT/conf/server.xml
+fi
 if [ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT:-8444} -Dtomcat.sslkeystorefile=${KEYSTORE_FILE:-$TOMCAT_ROOT/conf/server.jks} -Dtomcat.sslkeystorepassword=${KEYSTORE_PASSWORD:-password}"
