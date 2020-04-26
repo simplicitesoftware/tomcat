@@ -21,7 +21,7 @@ export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UT
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443}"
 if [ "$GZIP" = "true" ]
 then
-	sed -i 's/ compression="on"/compression="off"/g' $TOMCAT_ROOT/conf/server.xml
+	sed -i 's/ compression="off"/compression="on"/g' $TOMCAT_ROOT/conf/server.xml
 fi
 if [ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ]
 then
