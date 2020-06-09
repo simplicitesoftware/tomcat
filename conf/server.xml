@@ -19,7 +19,7 @@
      define subcomponents such as "Valves" at this level.
      Documentation at /docs/config/server.html
  -->
-<Server port="${tomcat.adminport}" shutdown="SHUTDOWN">
+<Server port="${tomcat.adminport:-8005}" shutdown="SHUTDOWN">
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
@@ -58,19 +58,19 @@
         maxThreads="150" minSpareThreads="4"/>
     -->
 
-    <Connector port="${tomcat.httpport}" protocol="HTTP/1.1" redirectPort="443" maxPostSize="-1" maxThreads="200" maxConnections="-1"
+    <Connector port="${tomcat.httpport:-8080}" protocol="HTTP/1.1" redirectPort="443" maxPostSize="-1" maxThreads="200" maxConnections="-1"
 	 compression="off" compressibleMimeType="text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml,image/svg+xml">
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
     </Connector>
-    <Connector port="${tomcat.httpsport}" protocol="HTTP/1.1" scheme="https" secure="true" maxPostSize="-1" maxThreads="200" maxConnections="-1"
+    <Connector port="${tomcat.httpsport:-8443}" protocol="HTTP/1.1" scheme="https" secure="true" maxPostSize="-1" maxThreads="200" maxConnections="-1"
 	 compression="off" compressibleMimeType="text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml,image/svg+xml">
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
     </Connector>
-    <!-- AJP Connector port="${tomcat.ajpport}" protocol="AJP/1.3" redirectPort="443" maxPostSize="-1">
+    <!-- AJP Connector port="${tomcat.ajpport:-8009}" protocol="AJP/1.3" redirectPort="443" maxPostSize="-1">
     </Connector AJP -->
-    <!-- SSL Connector port="${tomcat.sslport}" protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https" secure="true" SSLEnabled="true" maxPostSize="-1" maxThreads="200" maxConnections="-1">
+    <!-- SSL Connector port="${tomcat.sslport:-8444}" protocol="org.apache.coyote.http11.Http11NioProtocol" scheme="https" secure="true" SSLEnabled="true" maxPostSize="-1" maxThreads="200" maxConnections="-1">
         <SSLHostConfig>
-            <Certificate certificateKeystoreFile="${tomcat.sslkeystorefile}" certificateKeystorePassword="${tomcat.sslkeystorepassword}"/>
+            <Certificate certificateKeystoreFile="${tomcat.sslkeystorefile:-conf/server.jks}" certificateKeystorePassword="${tomcat.sslkeystorepassword:-password}"/>
         </SSLHostConfig>
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol"/>
     </Connector SSL -->
