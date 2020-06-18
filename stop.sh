@@ -14,8 +14,6 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005}"
 
-echo "Java options: $JAVA_OPTS"
-
 cd $TOMCAT_ROOT/bin
 ./shutdown.sh
 cd ..

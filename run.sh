@@ -248,8 +248,6 @@ else
 	sed -i '/^exec /s/ jpda start / start /' $TOMCAT_ROOT/bin/startup.sh
 fi
 
-echo "Java options: $JAVA_OPTS"
-
 cd $TOMCAT_ROOT/bin
 ./startup.sh
 cd ..
