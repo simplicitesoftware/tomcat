@@ -2140,6 +2140,14 @@
         <mime-type>application/jsonml+json</mime-type>
     </mime-mapping>
     <mime-mapping>
+        <extension>yml</extension>
+        <mime-type>application/yaml</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>yaml</extension>
+        <mime-type>application/yaml</mime-type>
+    </mime-mapping>
+    <mime-mapping>
         <extension>jspf</extension>
         <mime-type>text/plain</mime-type>
     </mime-mapping>
@@ -4255,6 +4263,10 @@
     <mime-mapping>
         <extension>wad</extension>
         <mime-type>application/x-doom</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>wasm</extension>
+        <mime-type>application/wasm</mime-type>
     </mime-mapping>
     <mime-mapping>
         <extension>wav</extension>
