@@ -18,7 +18,7 @@ echo "Tomcat root: $TOMCAT_ROOT"
 [ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
 
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true"
-export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.httpredirectport=${TOMCAT_AJPREDIRECTPORT:-443}"
+export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.ajpredirectport=${TOMCAT_AJPREDIRECTPORT:-443}"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSIZE:-8192} -Dtomcat.maxthreads=${TOMCAT_MAXTHREADS:-200} -Dtomcat.maxconnections=${TOMCAT_MAXCONNECTIONS:-8192}"
 [ "$GZIP" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.compression=on"
 if [ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ]
@@ -203,6 +203,7 @@ EOF
 	<Valve className="com.simplicite.tomcat.valves.APISessionValve"/>
 </Context>
 EOF
+	cp -f $TOMCAT_ROOT/favicon.ico $TOMCAT_ROOT/webapps/ROOT
 	cat > $TOMCAT_ROOT/webapps/ROOT/index.jsp << EOF
 <!DOCTYPE html>
 <html>
