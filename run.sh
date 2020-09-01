@@ -249,7 +249,7 @@ fi
 if [ "$CORS" = "true" ]
 then
 	sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
-	sed -i "s/@cors.origins@/${CORS_ORIGINS:-\*}/;s/@cors.credentials@/${CORS_CREDENTIALS:-false}/;s/@cors.maxage/${CORS_MAXAGE:-1728000}/" $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
+	sed -i "s~@cors.origins@~${CORS_ORIGINS:-\*}~;s~@cors.credentials@~${CORS_CREDENTIALS:-false}~;s~@cors.maxage@~${CORS_MAXAGE:-1728000}~" $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
 fi
 
 [ "$API_EXTRA_PATTERNS" != "" ] && sed -i "/APISessionValve/s/ extraPatterns=\".*\"//g;/APISessionValve/s/\/>/ extraPatterns=\"$API_EXTRA_PATTERNS\"\/>/" $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
