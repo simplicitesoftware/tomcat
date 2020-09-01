@@ -237,7 +237,7 @@ while (keys.hasMoreElements()) {
 EOF
 fi
 
-[ "$CORS" = "true" ] && sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+[ "$CORS" = "true" ] && sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
 [ "$API_EXTRA_PATTERNS" != "" ] && sed -i "/APISessionValve/s/ extraPatterns=\".*\"//g;/APISessionValve/s/\/>/ extraPatterns=\"$API_EXTRA_PATTERNS\"\/>/" $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 
 if [ "$JPDA" = "true" ]
