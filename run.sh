@@ -235,6 +235,15 @@ while (keys.hasMoreElements()) {
 </body>
 </html>
 EOF
+	cat > $TOMCAT_ROOT/webapps/ROOT/api.jsp << EOF
+<%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%>{
+	"os": "<%= System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") %>",
+	"jvm": "<%= System.getProperty("java.version") + " " + System.getProperty("java.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") %>",
+	"encoding": "<%= System.getProperty("file.encoding") %>",
+	"server": "<%= request.getServletContext().getServerInfo() %>",
+	"systemdate": "<%= new java.util.Date() %>"
+}
+EOF
 fi
 
 if [ "$CORS" = "true" ]
