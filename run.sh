@@ -165,6 +165,11 @@ then
 	then
 		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=1521
+		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
+		then
+			echo "Missing database name, user and/or password" >&2
+			exit 2	
+		fi
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		# TODO: Load database if needed
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
@@ -173,6 +178,11 @@ then
 	then
 		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=1433
+		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
+		then
+			echo "Missing database name, user and/or password" >&2
+			exit 2	
+		fi
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		# TODO: Load database if needed
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
