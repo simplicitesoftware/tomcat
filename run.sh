@@ -171,7 +171,11 @@ then
 			exit 2	
 		fi
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		# TODO: Load database if needed
+		if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
+		then
+			# convert script
+			# if sqlplus load script
+		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
 	elif [ $DB_VENDOR = "mssql" ]
@@ -184,7 +188,11 @@ then
 			exit 2	
 		fi
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		# TODO: Load database if needed
+		if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
+		then
+			# convert script
+			# if sqlcmd load script
+		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
 	fi

@@ -75,8 +75,8 @@ rem Check the environment
 rem Guess CATALINA_HOME if not defined
 if not "%CATALINA_HOME%" == "" goto gotHome
 set "CATALINA_HOME=%cd%"
-if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" goto okHome
-if exist "%CATALINA_HOME%\bin\%SERVICE_NAME%.exe" goto okHome
+if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" goto gotHome
+if exist "%CATALINA_HOME%\bin\%SERVICE_NAME%.exe" goto gotHome
 rem CD to the upper dir
 cd ..
 set "CATALINA_HOME=%cd%"
@@ -209,7 +209,7 @@ if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" (
 )
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 9.0.38 Server - https://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 9.0.39 Server - https://tomcat.apache.org/" ^
     --DisplayName "Apache Tomcat 9.0 %SERVICE_NAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
