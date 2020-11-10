@@ -12,7 +12,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
 echo "Tomcat root: $TOMCAT_ROOT"
 
-if [ "CLEAN" = "true" ]
+if [ "$CLEAN" = "true" ]
 then
 	rm -fr $TOMCAT_ROOT/conf/Catalina
 	rm -fr $TOMCAT_ROOT/work
