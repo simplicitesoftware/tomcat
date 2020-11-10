@@ -12,6 +12,27 @@ export PATH=$JAVA_HOME/bin:$PATH
 TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
 echo "Tomcat root: $TOMCAT_ROOT"
 
+if [ "CLEAN" = "true" ]
+then
+	rm -fr $TOMCAT_ROOT/conf/Catalina
+	rm -fr $TOMCAT_ROOT/work
+	rm -fr $TOMCAT_ROOT/temp
+	rm -fr $TOMCAT_ROOT/logs
+	if [ -d $TOMCAT_ROOT/webapps/ROOT ]
+	then
+		find $TOMCAT_ROOT/webapps/ROOT/WEB-INF -name \*.ser -exec rm -f {} \;
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/log
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/src
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/bin
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/buil
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/jar
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/maven
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/cache
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/recyclebin
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/tmp
+	fi	
+fi
+
 [ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
 [ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
 [ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
