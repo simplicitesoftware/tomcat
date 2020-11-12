@@ -24,7 +24,7 @@ then
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/log
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/src
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/bin
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/buil
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/build
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/jar
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/maven
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/cache
