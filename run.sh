@@ -14,6 +14,7 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 if [ "$CLEAN" = "true" ]
 then
+	echo -n "Cleaning work files/dirs... "
 	rm -fr $TOMCAT_ROOT/conf/Catalina
 	rm -fr $TOMCAT_ROOT/work
 	rm -fr $TOMCAT_ROOT/temp
@@ -30,7 +31,8 @@ then
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/cache
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/recyclebin
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/tmp
-	fi	
+	fi
+	echo "Done"
 fi
 
 [ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
@@ -216,6 +218,7 @@ then
 		JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
 	fi
 else
+	echo -n "Generating default webapp... "
 	mkdir $TOMCAT_ROOT/webapps/ROOT
 	mkdir $TOMCAT_ROOT/webapps/ROOT/WEB-INF
 	mkdir $TOMCAT_ROOT/webapps/ROOT/META-INF
@@ -281,6 +284,7 @@ EOF
 	"systemdate": "<%= new java.util.Date() %>"
 }
 EOF
+	echo "Done"
 fi
 
 if [ "$CORS" = "true" ]
