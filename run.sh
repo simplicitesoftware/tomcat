@@ -297,9 +297,9 @@ fi
 
 if [ "$JPDA" = "true" ]
 then
-	sed -i '/^exec /s/ start / jpda start /' $TOMCAT_ROOT/bin/startup.sh
+	sed -i '/^exec /s/" start /" jpda start /' $TOMCAT_ROOT/bin/startup.sh
 else
-	sed -i '/^exec /s/ jpda start / start /' $TOMCAT_ROOT/bin/startup.sh
+	sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
 fi
 
 cd $TOMCAT_ROOT/bin
