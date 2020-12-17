@@ -15,8 +15,7 @@ echo "Tomcat root: $TOMCAT_ROOT"
 [ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
 [ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
 
-export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8 -Dgit.basedir=$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git -Dplatform.autoupgrade=true"
-export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.ajpport=${TOMCAT_AJP_PORT:-8009}"
+export JAVA_OPTS="$JAVA_OPTS -server -Dfile.encoding=UTF-8"
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
