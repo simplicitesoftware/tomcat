@@ -77,7 +77,7 @@ then
 	[ -f $LOG4J ] && sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J
 	# Log4J version 2.x
 	LOG4J2="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j2.xml"
-	[ -f $LOG4J2 ] && sed -i 's/<!-- AppenderRef ref"SIMPLICITE-CONSOLE"\/ -->/<AppenderRef ref"SIMPLICITE-CONSOLE"\/>/' $LOG4J2
+	[ -f $LOG4J2 ] && sed -i 's/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"\/ -->/<AppenderRef ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J2
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqld
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
