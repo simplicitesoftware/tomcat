@@ -52,7 +52,7 @@ fi
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.ajpredirectport=${TOMCAT_AJPREDIRECTPORT:-443}"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSIZE:-8192} -Dtomcat.maxthreads=${TOMCAT_MAXTHREADS:-200} -Dtomcat.maxconnections=${TOMCAT_MAXCONNECTIONS:-8192}"
-[ "$GZIP" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.compression=on"
+[ "$GZIP" = "true" -o "$TOMCAT_COMPRESSION" = "on" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.compression=on"
 if [ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT:-8444} -Dtomcat.sslkeystorefile=${KEYSTORE_FILE:-$TOMCAT_ROOT/conf/server.jks} -Dtomcat.sslkeystorepassword=${KEYSTORE_PASSWORD:-password}"
@@ -65,6 +65,7 @@ then
 fi
 export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git}"
 [ "$JMX" = "true" -o ${TOMCAT_JMX_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+[ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ "$JPDA" = "true" -o ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
 [ "$TOMCAT_LOG_ARGS" != "" ] && sed -i "s/ logArgs=\"false\"/ logArgs=\"$TOMCAT_LOG_ARGS\"/" $TOMCAT_ROOT/conf/server.xml
 [ "$TOMCAT_LOG_ENV" != "" ] && sed -i "s/ logEnv=\"false\"/ logEnv=\"$TOMCAT_LOG_ENV\"/" $TOMCAT_ROOT/conf/server.xml
