@@ -29,6 +29,10 @@ then
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/cache
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/recyclebin
 		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/tmp
+		# Older versions' dirs (just in case...)
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/cache
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/recyclebin
+		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/tmp
 	fi
 	echo "Done"
 fi
