@@ -315,6 +315,8 @@ fi
 
 if [ "$JPDA" = "true" ]
 then
+	[ "$JPDA_SUSPEND" = "true" ] && export JPDA_SUSPEND=y
+	[ "$JPDA_SUSPEND" = "false" ] && export JPDA_SUSPEND=n
 	sed -i '/^exec /s/" start /" jpda start /' $TOMCAT_ROOT/bin/startup.sh
 else
 	sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
