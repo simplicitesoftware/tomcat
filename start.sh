@@ -228,9 +228,47 @@ then
 			exit 2	
 		fi
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
+		W=${DB_WAIT:-1}
+		N=0
+		while [ $N -lt $W ]
+		do
+			N=`expr $N + 1`
+			sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -b -Q "select 1"
+			RET=$?
+			if [ $RET -ne 0 ]
+			then
+				if [ $W -eq 1 -o $N -eq $W ]
+				then
+					echo "Unable to connect to database" >&2
+					exit 3
+				else
+					echo "Waiting 5s for database ($N)"
+					sleep 5
+				fi
+			fi
+		done
+		sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system"
+		rest=$?
+		if [ $RET -ne 0 ]
 		then
-			echo "TODO: convert script and load it using isql client"
+			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
+			then
+				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql ]
+				then
+					echo "Loading database..."
+					sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -i $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql
+					RET=$?
+					if [ $RET -ne 0 ]
+					then
+						echo "Load database error" >&2
+						exit 6
+					fi
+					echo "Done"
+				fi
+			else
+				echo "Database is not setup" >&2
+				exit 4
+			fi
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
