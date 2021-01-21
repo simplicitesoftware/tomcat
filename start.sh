@@ -212,9 +212,53 @@ then
 			exit 2	
 		fi
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-		if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
+		W=${DB_WAIT:-1}
+		N=0
+		while [ $N -lt $W ]
+		do
+			N=`expr $N + 1`
+			sqlplus $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT << EOF
+whenever sqlerror exit 1;
+select 1 from dual;
+EOF
+			RET=$?
+			if [ $RET -ne 0 ]
+			then
+				if [ $W -eq 1 -o $N -eq $W ]
+				then
+					echo "Unable to connect to database" >&2
+					exit 3
+				else
+					echo "Waiting 5s for database ($N)"
+					sleep 5
+				fi
+			fi
+		done
+		sqlplus $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT << EOF
+whenever sqlerror exit 1;
+select 1 from m_system;
+EOF
+		RET=$?
+		if [ $RET -ne 0 ]
 		then
-			echo "TODO: convert script and load it using sqlplus client"
+			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
+			then
+				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-oracle.sql ]
+				then
+					echo "Loading database..."
+					sqlplus $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql
+					RET=$?
+					if [ $RET -ne 0 ]
+					then
+						echo "Load database error" >&2
+						exit 6
+					fi
+					echo "Done"
+				fi
+			else
+				echo "Database is not setup" >&2
+				exit 4
+			fi
 		fi
 		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
@@ -248,7 +292,7 @@ then
 			fi
 		done
 		sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system"
-		rest=$?
+		RET=$?
 		if [ $RET -ne 0 ]
 		then
 			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
