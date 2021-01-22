@@ -277,7 +277,7 @@ EOF
 		while [ $N -lt $W ]
 		do
 			N=`expr $N + 1`
-			sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -b -Q "select 1"
+			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "select 1"
 			RET=$?
 			if [ $RET -ne 0 ]
 			then
@@ -291,7 +291,7 @@ EOF
 				fi
 			fi
 		done
-		sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system"
+		sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system"
 		RET=$?
 		if [ $RET -ne 0 ]
 		then
@@ -300,7 +300,7 @@ EOF
 				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql ]
 				then
 					echo "Loading database..."
-					sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -i $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql
+					sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -i $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
