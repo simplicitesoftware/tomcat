@@ -337,10 +337,9 @@ EOF
 	cat > $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Context>
-<Context useHttpOnly="false">
+<Context>
 	<Manager pathname=""/>
 	<JarScanner scanClassPath="false"/>
-	<Valve className="com.simplicite.tomcat.valves.APISessionValve"/>
 </Context>
 EOF
 	cp -f $TOMCAT_ROOT/favicon.ico $TOMCAT_ROOT/webapps/ROOT

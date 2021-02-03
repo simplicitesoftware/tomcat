@@ -632,10 +632,6 @@
 
     <session-config>
         <session-timeout>30</session-timeout>
-        <!-- cookie-config>
-            <http-only>true</http-only>
-            <secure>true</secure>
-        </cookie-config -->
     </session-config>
 
 
@@ -2138,14 +2134,6 @@
     <mime-mapping>
         <extension>jsonml</extension>
         <mime-type>application/jsonml+json</mime-type>
-    </mime-mapping>
-    <mime-mapping>
-        <extension>yml</extension>
-        <mime-type>application/yaml</mime-type>
-    </mime-mapping>
-    <mime-mapping>
-        <extension>yaml</extension>
-        <mime-type>application/yaml</mime-type>
     </mime-mapping>
     <mime-mapping>
         <extension>jspf</extension>
