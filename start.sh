@@ -246,7 +246,7 @@ EOF
 				if [ -f $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-oracle.sql ]
 				then
 					echo "Loading database..."
-					sqlplus $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-mssql.sql
+					sqlplus $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT < $TOMCAT_ROOT/webapps/ROOT/WEB-INF/db/simplicite-oracle.sql
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
