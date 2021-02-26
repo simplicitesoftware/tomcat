@@ -12,27 +12,29 @@ export PATH=$JAVA_HOME/bin:$PATH
 TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
 echo "Tomcat root: $TOMCAT_ROOT"
 
+[ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
+[ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
+[ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
+[ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
+
 if [ ${TOMCAT_CLEAN_WORK_DIRS:-true} = "true" ]
 then
 	echo -n "Cleaning work files/dirs... "
-	rm -fr $TOMCAT_ROOT/conf/Catalina
-	rm -fr $TOMCAT_ROOT/work
-	rm -fr $TOMCAT_ROOT/temp
+	[ -d $TOMCAT_ROOT/conf/Catalina ] && rm -fr $TOMCAT_ROOT/conf/Catalina/*
+	rm -fr $TOMCAT_ROOT/work/*
+	rm -fr $TOMCAT_ROOT/temp/*
 	if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 	then
 		find $TOMCAT_ROOT/webapps/ROOT/WEB-INF -name \*.ser -exec rm -f {} \;
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/src
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/bin
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/build
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/jar
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/maven
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/cache
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/recyclebin
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/tmp
+		for DIR in src bin build jar maven cache recyclebin tmp
+		do
+			[ -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/$DIR ] && rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/$DIR/*
+		done
 		# Older versions' dirs (just in case...)
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/cache
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/recyclebin
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/tmp
+		for DIR in cache recyclebin tmp
+		do
+			[ -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/$DIR ] && rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/dbdoc/$DIR
+		done
 	fi
 	echo "Done"
 fi
@@ -40,18 +42,10 @@ fi
 if [ ${TOMCAT_CLEAN_LOG_DIRS:-false} = "true" ]
 then
 	echo -n "Cleaning log dirs... "
-	rm -fr $TOMCAT_ROOT/logs
-	if [ -d $TOMCAT_ROOT/webapps/ROOT ]
-	then
-		rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/log
-	fi
+	rm -fr $TOMCAT_ROOT/logs/*
+	[ -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/log ] && rm -fr $TOMCAT_ROOT/webapps/ROOT/WEB-INF/log/*
 	echo "Done"
 fi
-
-[ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
-[ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
-[ ! -d $TOMCAT_ROOT/logs ] && mkdir $TOMCAT_ROOT/logs
-[ ! -d $TOMCAT_ROOT/webapps ] && mkdir $TOMCAT_ROOT/webapps
 
 export JAVA_OPTS="$JAVA_OPTS -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.ajpredirectport=${TOMCAT_AJPREDIRECTPORT:-443}"
