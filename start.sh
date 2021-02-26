@@ -169,7 +169,7 @@ then
 		if [ -w $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
 		then
 			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
-		then
+		else
 			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup mysql connection"
 		fi
 	elif [ $DB_VENDOR = "postgresql" ]
@@ -231,7 +231,7 @@ then
 		if [ -w $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
 		then
 			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
-		then
+		else
 			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup postgresql connection"
 		fi
 	elif [ $DB_VENDOR = "oracle" ]
@@ -296,7 +296,7 @@ EOF
 		if [ -w $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
 		then
 			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
-		then
+		else
 			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup oracle connection"
 		fi
 	elif [ $DB_VENDOR = "mssql" ]
@@ -355,7 +355,7 @@ EOF
 		if [ -w $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
 		then
 			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
-		then
+		else
 			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup mssql connection"
 		fi
 	fi
