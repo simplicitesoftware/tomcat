@@ -54,29 +54,57 @@ export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSI
 if [ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT:-8444} -Dtomcat.sslkeystorefile=${KEYSTORE_FILE:-$TOMCAT_ROOT/conf/server.jks} -Dtomcat.sslkeystorepassword=${KEYSTORE_PASSWORD:-password}"
-	sed -i 's/<!-- SSL Connector/<Connector/;s/Connector SSL -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
+	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	then
+		sed -i 's/<!-- SSL Connector/<Connector/;s/Connector SSL -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable SSL connector"
+	fi
 fi
 if [ "$AJP" = "true" -o ${TOMCAT_AJP_PORT:-0} -gt 0 ]
 then
-	sed -i 's/<!-- AJP Connector/<Connector/;s/Connector AJP -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
 	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT:-8009} -Dtomcat.ajpaddress=${TOMCAT_AJP_ADDRESS:-0.0.0.0} -Dtomcat.ajpprotocol=${TOMCAT_AJP_PROTOCOL:-AJP/1.3} -Dtomcat.ajpsecretrequired=${TOMCAT_AJP_SECRET_REQUIRED:-false} -Dtomcat.ajpsecret=${TOMCAT_AJP_SECRET:-simplicite}"
+	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	then
+		sed -i 's/<!-- AJP Connector/<Connector/;s/Connector AJP -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable SSL connector"
+	fi
 fi
 export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/ROOT/WEB-INF/git}"
 [ "$JMX" = "true" -o ${TOMCAT_JMX_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ "$JPDA" = "true" -o ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
-[ "$TOMCAT_LOG_ARGS" != "" ] && sed -i "s/ logArgs=\"false\"/ logArgs=\"$TOMCAT_LOG_ARGS\"/" $TOMCAT_ROOT/conf/server.xml
-[ "$TOMCAT_LOG_ENV" != "" ] && sed -i "s/ logEnv=\"false\"/ logEnv=\"$TOMCAT_LOG_ENV\"/" $TOMCAT_ROOT/conf/server.xml
-[ "$TOMCAT_LOG_PROPS" != "" ] && sed -i "s/ logProps=\"false\"/ logProps=\"$TOMCAT_LOG_PROPS\"/" $TOMCAT_ROOT/conf/server.xml
+if [ "$TOMCAT_LOG_ARGS" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	then
+		sed -i "s/ logArgs=\"false\"/ logArgs=\"$TOMCAT_LOG_ARGS\"/" $TOMCAT_ROOT/conf/server.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable log arguments"
+	fi
+fi
+if [ "$TOMCAT_LOG_ENV" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	then
+		sed -i "s/ logEnv=\"false\"/ logEnv=\"$TOMCAT_LOG_ENV\"/" $TOMCAT_ROOT/conf/server.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable log environment"
+	fi
+fi
+if [ "$TOMCAT_LOG_PROPS" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	then
+		sed -i "s/ logProps=\"false\"/ logProps=\"$TOMCAT_LOG_PROPS\"/" $TOMCAT_ROOT/conf/server.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable log properties"
+	fi
+fi
 
 if [ -d $TOMCAT_ROOT/webapps/ROOT ]
 then
-	# Log4J version 1.x
-	LOG4J="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j.xml"
-	[ -f $LOG4J ] && sed -i 's/<!-- appender-ref ref="SIMPLICITE-CONSOLE"\/ -->/<appender-ref ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J
-	# Log4J version 2.x
-	LOG4J2="$TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/log4j2.xml"
-	[ -f $LOG4J2 ] && sed -i 's/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"\/ -->/<AppenderRef ref="SIMPLICITE-CONSOLE"\/>/' $LOG4J2
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqld
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
@@ -137,8 +165,13 @@ then
 				exit 4
 			fi
 		fi
-		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME -Dmysql.ssl=$DB_SSL"
+		if [ $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
+		then
+			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		then
+			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup mysql connection"
+		fi
 	elif [ $DB_VENDOR = "postgresql" ]
 	then
 		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
@@ -194,8 +227,13 @@ then
 				exit 4
 			fi
 		fi
-		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME -Dpostgresql.ssl=$DB_SSL"
+		if [ $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
+		then
+			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		then
+			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup postgresql connection"
+		fi
 	elif [ $DB_VENDOR = "oracle" ]
 	then
 		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
@@ -254,8 +292,13 @@ EOF
 				exit 4
 			fi
 		fi
-		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
+		if [ $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
+		then
+			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		then
+			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup oracle connection"
+		fi
 	elif [ $DB_VENDOR = "mssql" ]
 	then
 		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
@@ -308,10 +351,16 @@ EOF
 				exit 4
 			fi
 		fi
-		sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
 		JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
+		if [ $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
+		then
+			sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+		then
+			echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to setup mssql connection"
+		fi
 	fi
-else
+elif [ -w $TOMCAT_ROOT/webapps ]
+then
 	echo -n "Generating default webapp... "
 	mkdir $TOMCAT_ROOT/webapps/ROOT
 	mkdir $TOMCAT_ROOT/webapps/ROOT/WEB-INF
@@ -382,19 +431,37 @@ fi
 
 if [ "$CORS" = "true" ]
 then
-	sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
-	sed -i "s~@cors.origins@~${CORS_ORIGINS:-\*}~;s~@cors.credentials@~${CORS_CREDENTIALS:-false}~;s~@cors.maxage@~${CORS_MAXAGE:-1728000}~" $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
+	if [ -w $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- cors --><!-- /<!-- cors --></;s/ --><!-- cors -->/><!-- cors -->/' $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
+		sed -i "s~@cors.origins@~${CORS_ORIGINS:-\*}~;s~@cors.credentials@~${CORS_CREDENTIALS:-false}~;s~@cors.maxage@~${CORS_MAXAGE:-1728000}~" $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/WEB-INF/web.xml is not writeable, unable to set CORS options"
+	fi
 fi
 
-[ "$API_EXTRA_PATTERNS" != "" ] && sed -i "/APISessionValve/s/ extraPatterns=\".*\"//g;/APISessionValve/s/\/>/ extraPatterns=\"$API_EXTRA_PATTERNS\"\/>/" $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+if [ "$API_EXTRA_PATTERNS" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml ]
+	then
+		sed -i "/APISessionValve/s/ extraPatterns=\".*\"//g;/APISessionValve/s/\/>/ extraPatterns=\"$API_EXTRA_PATTERNS\"\/>/" $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/ROOT/META-INF/context.xml is not writeable, unable to set API extra patterns"
+	fi
+fi
 
 if [ "$JPDA" = "true" ]
 then
-	[ "$JPDA_SUSPEND" = "true" ] && export JPDA_SUSPEND=y
-	[ "$JPDA_SUSPEND" = "false" ] && export JPDA_SUSPEND=n
-	sed -i '/^exec /s/" start /" jpda start /' $TOMCAT_ROOT/bin/startup.sh
+	if [ -w $TOMCAT_ROOT/bin/startup.sh ]
+	then
+		[ "$JPDA_SUSPEND" = "true" ] && export JPDA_SUSPEND=y
+		[ "$JPDA_SUSPEND" = "false" ] && export JPDA_SUSPEND=n
+		sed -i '/^exec /s/" start /" jpda start /' $TOMCAT_ROOT/bin/startup.sh
+	else
+		echo "WARNING: $TOMCAT_ROOT/bin/startup.sh is not writeable, unable to set debug mode"
+	fi
 else
-	sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
+	[ -w $TOMCAT_ROOT/bin/startup.sh ] && sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
 fi
 
 cd $TOMCAT_ROOT/bin
