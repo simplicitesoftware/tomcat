@@ -20,7 +20,7 @@
      Documentation at /docs/config/server.html
  -->
 <Server port="${tomcat.adminport:-8005}" shutdown="SHUTDOWN">
-  <Listener className="org.apache.catalina.startup.VersionLoggerListener" logArgs="false" logEnv="false" logProps="false" />
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" logArgs="${tomcat.logargs:-false}" logEnv="${tomcat.logenv:-false}" logProps="${tomcat.logprops:-false}" />
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->

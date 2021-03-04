@@ -80,33 +80,9 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$JMX" = "true" -o ${TOMCAT_JMX_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ "$JPDA" = "true" -o ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
-if [ "$TOMCAT_LOG_ARGS" != "" ]
-then
-	if [ -w $TOMCAT_ROOT/conf/server.xml ]
-	then
-		sed -i "s/ logArgs=\"false\"/ logArgs=\"$TOMCAT_LOG_ARGS\"/" $TOMCAT_ROOT/conf/server.xml
-	else
-		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable log arguments"
-	fi
-fi
-if [ "$TOMCAT_LOG_ENV" != "" ]
-then
-	if [ -w $TOMCAT_ROOT/conf/server.xml ]
-	then
-		sed -i "s/ logEnv=\"false\"/ logEnv=\"$TOMCAT_LOG_ENV\"/" $TOMCAT_ROOT/conf/server.xml
-	else
-		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable log environment"
-	fi
-fi
-if [ "$TOMCAT_LOG_PROPS" != "" ]
-then
-	if [ -w $TOMCAT_ROOT/conf/server.xml ]
-	then
-		sed -i "s/ logProps=\"false\"/ logProps=\"$TOMCAT_LOG_PROPS\"/" $TOMCAT_ROOT/conf/server.xml
-	else
-		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable log properties"
-	fi
-fi
+[ "$TOMCAT_LOG_ARGS" = "true" -o "$TOMCAT_LOG_ARGS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logargs=$TOMCAT_LOG_ARGS"
+[ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
+[ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 then
