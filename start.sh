@@ -114,7 +114,7 @@ then
 	[ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
 	echo "Database vendor: $DB_VENDOR"
 	# Check if generic database configuration is enabled (e.g. in Doker images)
-	grep '<!-- database --><Resource' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+	grep -q '<!-- database --><Resource' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
 	GENERIC_DB=$?
 	if [ $DB_VENDOR = "hsqldb" -a $GENERIC_DB = 0 ]
 	then
