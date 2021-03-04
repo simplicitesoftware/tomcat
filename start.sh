@@ -57,7 +57,8 @@ export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSI
 if [ "$SSL" = "true" -o ${TOMCAT_SSL_PORT:-0} -gt 0 ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.sslport=${TOMCAT_SSL_PORT:-8444} -Dtomcat.sslkeystorefile=${KEYSTORE_FILE:-$TOMCAT_ROOT/conf/server.jks} -Dtomcat.sslkeystorepassword=${KEYSTORE_PASSWORD:-password}"
-	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	grep -q '<!-- SSL Connector' $TOMCAT_ROOT/conf/server.xml
+	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml ]
 	then
 		sed -i 's/<!-- SSL Connector/<Connector/;s/Connector SSL -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
 	else
@@ -67,7 +68,8 @@ fi
 if [ "$AJP" = "true" -o ${TOMCAT_AJP_PORT:-0} -gt 0 ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.ajpport=${TOMCAT_AJP_PORT:-8009} -Dtomcat.ajpaddress=${TOMCAT_AJP_ADDRESS:-0.0.0.0} -Dtomcat.ajpprotocol=${TOMCAT_AJP_PROTOCOL:-AJP/1.3} -Dtomcat.ajpsecretrequired=${TOMCAT_AJP_SECRET_REQUIRED:-false} -Dtomcat.ajpsecret=${TOMCAT_AJP_SECRET:-simplicite}"
-	if [ -w $TOMCAT_ROOT/conf/server.xml ]
+	grep -q '<!-- AJP Connector' $TOMCAT_ROOT/conf/server.xml
+	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml ]
 	then
 		sed -i 's/<!-- AJP Connector/<Connector/;s/Connector AJP -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
 	else
