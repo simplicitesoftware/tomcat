@@ -108,7 +108,7 @@ fi
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 then
-	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqld
+	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
 	[ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
