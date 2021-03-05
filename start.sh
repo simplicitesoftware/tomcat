@@ -3,7 +3,7 @@
 [ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
 then
-	echo "JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
+	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
 	exit 1
 fi
 export PATH=$JAVA_HOME/bin:$PATH
@@ -104,10 +104,23 @@ then
 		[ "$DB_SSL" = "" ] && DB_SSL=false
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
-			echo "Missing database name, user and/or password" >&2
+			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2	
 		fi
 		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		if [ $GENERIC_DB = 0 ]
+		then
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.mysql.cj.jdbc.Driver' -Ddb.url='mysql://$DB_HOST:$DB_PORT/$DB_NAME?autoReconnect=true&useSSL=$DB_SSL&allowPublicKeyRetrieval=true&characterEncoding=utf8&characterResultSets=utf8&serverTimezone=${TOMCAT_TIMEZONE:-`date +%Z`}'"
+		else
+			JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME -Dmysql.ssl=$DB_SSL"
+			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
+			then
+				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+			else
+				echo "ERROR: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup mysql connection"
+				exit 3
+			fi
+		fi
 		W=${DB_WAIT:-1}
 		N=0
 		while [ $N -lt $W ]
@@ -119,8 +132,8 @@ then
 			then
 				if [ $W -eq 1 -o $N -eq $W ]
 				then
-					echo "Unable to connect to database" >&2
-					exit 3
+					echo "ERROR: Unable to connect to database" >&2
+					exit 4
 				else
 					echo "Waiting 5s for database ($N)"
 					sleep 5
@@ -139,29 +152,17 @@ then
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
-						echo "Load database error" >&2
-						exit 6
+						echo "ERROR: Load database error" >&2
+						exit 7
 					fi
 					echo "Done"
 				else
-					echo "No dump to load database" >&2
-					exit 5
+					echo "ERROR: No dump to load database" >&2
+					exit 6
 				fi
 			else
-				echo "Database is not setup" >&2
-				exit 4
-			fi
-		fi
-		if [ $GENERIC_DB = 0 ]
-		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.mysql.cj.jdbc.Driver' -Ddb.url='mysql://$DB_HOST:$DB_PORT/$DB_NAME?autoReconnect=true&useSSL=$DB_SSL&allowPublicKeyRetrieval=true&characterEncoding=utf8&characterResultSets=utf8&serverTimezone=${TOMCAT_TIMEZONE:-`date +%Z`}'"
-		else
-			JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME -Dmysql.ssl=$DB_SSL"
-			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
-			then
-				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mysql --><!-- Resource/<!-- mysql --><Resource/;s/<\/Resource --><!-- mysql -->/<\/Resource><!-- mysql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
-			else
-				echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup mysql connection"
+				echo "ERROR: Database is not setup" >&2
+				exit 5
 			fi
 		fi
 	elif [ $DB_VENDOR = "postgresql" ]
@@ -171,10 +172,23 @@ then
 		[ "$DB_SSL" = "" ] && DB_SSL=false
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
-			echo "Missing database name, user and/or password" >&2
+			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2	
 		fi
 		echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		if [ $GENERIC_DB = 0 ]
+		then
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='org.postgresql.Driver' -Ddb.url='postgresql://$DB_HOST:$DB_PORT/$DB_NAME?ssl=$DB_SSL'"
+		else
+			JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME -Dpostgresql.ssl=$DB_SSL"
+			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
+			then
+				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+			else
+				echo "ERROR: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup postgresql connection"
+				exit 3
+			fi
+		fi
 		W=${DB_WAIT:-1}
 		N=0
 		while [ $N -lt $W ]
@@ -186,8 +200,8 @@ then
 			then
 				if [ $W -eq 1 -o $N -eq $W ]
 				then
-					echo "Unable to connect to database" >&2
-					exit 3
+					echo "ERROR: Unable to connect to database" >&2
+					exit 4
 				else
 					echo "Waiting 5s for database ($N)"
 					sleep 5
@@ -206,29 +220,17 @@ then
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
-						echo "Load database error" >&2
-						exit 6
+						echo "ERROR: Load database error" >&2
+						exit 7
 					fi
 					echo "Done"
 				else
-					echo "No dump to load database" >&2
-					exit 5
+					echo "ERROR: No dump to load database" >&2
+					exit 6
 				fi
 			else
-				echo "Database is not setup" >&2
-				exit 4
-			fi
-		fi
-		if [ $GENERIC_DB = 0 ]
-		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='org.postgresql.Driver' -Ddb.url='postgresql://$DB_HOST:$DB_PORT/$DB_NAME?ssl=$DB_SSL'"
-		else
-			JAVA_OPTS="$JAVA_OPTS -Dpostgresql.user=$DB_USER -Dpostgresql.password=$DB_PASSWORD -Dpostgresql.host=$DB_HOST -Dpostgresql.port=$DB_PORT -Dpostgresql.database=$DB_NAME -Dpostgresql.ssl=$DB_SSL"
-			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
-			then
-				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- postgresql --><!-- Resource/<!-- postgresql --><Resource/;s/<\/Resource --><!-- postgresql -->/<\/Resource><!-- postgresql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
-			else
-				echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup postgresql connection"
+				echo "ERROR: Database is not setup" >&2
+				exit 5
 			fi
 		fi
 	elif [ $DB_VENDOR = "oracle" ]
@@ -237,10 +239,23 @@ then
 		[ "$DB_PORT" = "" ] && DB_PORT=1521
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
-			echo "Missing database name, user and/or password" >&2
+			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2	
 		fi
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		if [ $GENERIC_DB = 0 ]
+		then
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='oracle.jdbc.driver.OracleDriver' -Ddb.url='oracle:thin:@$DB_HOST:$DB_PORT:$DB_NAME'"
+		else
+			JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
+			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
+			then
+				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+			else
+				echo "ERROR: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup oracle connection"
+				exit 3
+			fi
+		fi
 		W=${DB_WAIT:-1}
 		N=0
 		while [ $N -lt $W ]
@@ -255,8 +270,8 @@ EOF
 			then
 				if [ $W -eq 1 -o $N -eq $W ]
 				then
-					echo "Unable to connect to database" >&2
-					exit 3
+					echo "ERROR: Unable to connect to database" >&2
+					exit 4
 				else
 					echo "Waiting 5s for database ($N)"
 					sleep 5
@@ -279,26 +294,17 @@ EOF
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
-						echo "Load database error" >&2
-						exit 6
+						echo "ERROR: Load database error" >&2
+						exit 7
 					fi
 					echo "Done"
+				else
+					echo "ERROR: No script to load database" >&2
+					exit 6
 				fi
 			else
-				echo "Database is not setup" >&2
-				exit 4
-			fi
-		fi
-		if [ $GENERIC_DB = 0 ]
-		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='oracle.jdbc.driver.OracleDriver' -Ddb.url='oracle:thin:@$DB_HOST:$DB_PORT:$DB_NAME'"
-		else
-			JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
-			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
-			then
-				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- oracle --><!-- Resource/<!-- oracle --><Resource/;s/<\/Resource --><!-- oracle -->/<\/Resource><!-- oracle -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
-			else
-				echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup oracle connection"
+				echo "ERROR: Database is not setup" >&2
+				exit 5
 			fi
 		fi
 	elif [ $DB_VENDOR = "mssql" ]
@@ -307,10 +313,23 @@ EOF
 		[ "$DB_PORT" = "" ] && DB_PORT=1433
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
-			echo "Missing database name, user and/or password" >&2
+			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2	
 		fi
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
+		if [ $GENERIC_DB = 0 ]
+		then
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.microsoft.sqlserver.jdbc.SQLServerDriver' -Ddb.url='sqlserver://$DB_HOST:$DB_PORT;databaseName=$DB_NAME'"
+		else
+			JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
+			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
+			then
+				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+			else
+				echo "ERROR: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup mssql connection"
+				exit 3
+			fi
+		fi
 		W=${DB_WAIT:-1}
 		N=0
 		while [ $N -lt $W ]
@@ -322,8 +341,8 @@ EOF
 			then
 				if [ $W -eq 1 -o $N -eq $W ]
 				then
-					echo "Unable to connect to database" >&2
-					exit 3
+					echo "ERROR: Unable to connect to database" >&2
+					exit 4
 				else
 					echo "Waiting 5s for database ($N)"
 					sleep 5
@@ -343,26 +362,17 @@ EOF
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
-						echo "Load database error" >&2
-						exit 6
+						echo "ERROR: Load database error" >&2
+						exit 7
 					fi
 					echo "Done"
+				else
+					echo "ERROR: No script to load database" >&2
+					exit 6
 				fi
 			else
-				echo "Database is not setup" >&2
-				exit 4
-			fi
-		fi
-		if [ $GENERIC_DB = 0 ]
-		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.microsoft.sqlserver.jdbc.SQLServerDriver' -Ddb.url='sqlserver://$DB_HOST:$DB_PORT;databaseName=$DB_NAME'"
-		else
-			JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
-			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
-			then
-				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
-			else
-				echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup mssql connection"
+				echo "ERROR: Database is not setup" >&2
+				exit 5
 			fi
 		fi
 	fi
