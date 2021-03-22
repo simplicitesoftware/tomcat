@@ -261,7 +261,7 @@ then
 		while [ $N -lt $W ]
 		do
 			N=`expr $N + 1`
-			sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT << EOF
+			sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF
 whenever sqlerror exit 1;
 select 1 from dual;
 EOF
@@ -278,7 +278,7 @@ EOF
 				fi
 			fi
 		done
-		sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT << EOF
+		sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF
 whenever sqlerror exit 1;
 select 1 from m_system;
 EOF
@@ -290,7 +290,7 @@ EOF
 				if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-oracle.sql ]
 				then
 					echo "Loading database..."
-					sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-oracle.sql
+					sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-oracle.sql
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
