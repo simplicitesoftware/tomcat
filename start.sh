@@ -122,6 +122,7 @@ then
 			fi
 		fi
 		W=${DB_WAIT:-1}
+		T=${DB_WAIT_INTERVAL:-5}
 		N=0
 		while [ $N -lt $W ]
 		do
@@ -135,8 +136,8 @@ then
 					echo "ERROR: Unable to connect to database" >&2
 					exit 4
 				else
-					echo "Waiting 5s for database ($N)"
-					sleep 5
+					echo "Waiting $T seconds for database ($N)"
+					sleep $T
 				fi
 			fi
 		done
@@ -190,6 +191,7 @@ then
 			fi
 		fi
 		W=${DB_WAIT:-1}
+		T=${DB_WAIT_INTERVAL:-5}
 		N=0
 		while [ $N -lt $W ]
 		do
@@ -203,8 +205,8 @@ then
 					echo "ERROR: Unable to connect to database" >&2
 					exit 4
 				else
-					echo "Waiting 5s for database ($N)"
-					sleep 5
+					echo "Waiting $T seconds for database ($N)"
+					sleep $T
 				fi
 			fi
 		done
@@ -257,11 +259,12 @@ then
 			fi
 		fi
 		W=${DB_WAIT:-1}
+		T=${DB_WAIT_INTERVAL:-5}
 		N=0
 		while [ $N -lt $W ]
 		do
 			N=`expr $N + 1`
-			sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF
+			sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF > /dev/null 2>&1
 whenever sqlerror exit 1;
 select 1 from dual;
 EOF
@@ -273,12 +276,12 @@ EOF
 					echo "ERROR: Unable to connect to database" >&2
 					exit 4
 				else
-					echo "Waiting 5s for database ($N)"
-					sleep 5
+					echo "Waiting $T seconds for database ($N)"
+					sleep $T
 				fi
 			fi
 		done
-		sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF
+		sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF > /dev/null 2>&1
 whenever sqlerror exit 1;
 select 1 from m_system;
 EOF
@@ -331,6 +334,7 @@ EOF
 			fi
 		fi
 		W=${DB_WAIT:-1}
+		T=${DB_WAIT_INTERVAL:-5}
 		N=0
 		while [ $N -lt $W ]
 		do
@@ -344,8 +348,8 @@ EOF
 					echo "ERROR: Unable to connect to database" >&2
 					exit 4
 				else
-					echo "Waiting 5s for database ($N)"
-					sleep 5
+					echo "Waiting $T seconds for database ($N)"
+					sleep $T
 				fi
 			fi
 		done
