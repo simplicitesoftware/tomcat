@@ -156,6 +156,10 @@ then
 						echo "ERROR: Load database error" >&2
 						exit 7
 					fi
+					if [ "$DBDOC" != "" ]
+					then
+						mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME --execute="update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
+					fi
 					echo "Done"
 				else
 					echo "ERROR: No dump to load database" >&2
@@ -224,6 +228,10 @@ then
 					then
 						echo "ERROR: Load database error" >&2
 						exit 7
+					fi
+					if [ "$DBDOC" != "" ]
+					then
+						PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -c "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
 					echo "Done"
 				else
@@ -300,6 +308,14 @@ EOF
 						echo "ERROR: Load database error" >&2
 						exit 7
 					fi
+					if [ "$DBDOC" != "" ]
+					then
+						sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF > /dev/null 2>&1
+whenever sqlerror exit 1;
+update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR';
+commit;
+EOF
+					fi
 					echo "Done"
 				else
 					echo "ERROR: No script to load database" >&2
@@ -368,6 +384,10 @@ EOF
 					then
 						echo "ERROR: Load database error" >&2
 						exit 7
+					fi
+					if [ "$DBDOC" != "" ]
+					then
+						sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
 					echo "Done"
 				else
