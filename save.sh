@@ -16,7 +16,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 DB_DIR=$DB_DIR/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db
 if [ ! -d $DB_DIR ]
 then
-	echo "No database dir: $DB_DIR" >&2
+	echo "No database directory: $DB_DIR" >&2
 	exit 2
 fi
 
