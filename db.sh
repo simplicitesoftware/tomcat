@@ -21,11 +21,17 @@ echo "Database vendor: $DB_VENDOR"
 
 if [ $DB_VENDOR = "hsqldb" ]
 then
-	echo "HSQLDB database: Embedded"
-	DRIVER=`find $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib -name hsqldb-\*.jar -print`
-	SQLTOOL=`find $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db -name sqltool-\*.jar -print`
-	java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password="
-	exit $?
+	if [ -d $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db ]
+	then
+		echo "HSQLDB database: Embedded"
+		DRIVER=`find $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib -name hsqldb-\*.jar -print`
+		SQLTOOL=`find $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db -name sqltool-\*.jar -print`
+		java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password="
+		exit $?
+	else
+		echo "No HSQLDB database directory" >&2
+		exit 3
+	fi
 elif [ $DB_VENDOR = "mysql" ]
 then
 	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
