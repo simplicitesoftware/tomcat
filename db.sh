@@ -30,7 +30,7 @@ then
 		java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password="
 		exit $?
 	else
-		echo "No database directory: $DIR/db" >&2
+		echo "No database directory: $WEBINF_DIR/db" >&2
 		exit 3
 	fi
 elif [ $DB_VENDOR = "mysql" ]
