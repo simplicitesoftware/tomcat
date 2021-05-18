@@ -28,24 +28,28 @@ then
 	exit $?
 elif [ $DB_VENDOR = "mysql" ]
 then
+	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=3306
 	echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME
 	exit $?
 elif [ $DB_VENDOR = "postgresql" ]
 then
+	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=5432
 	echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
 	exit $?
 elif [ $DB_VENDOR = "oracle" ]
 then
+	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=1521
 	echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	sqlplus $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME
 	exit $?
 elif [ $DB_VENDOR = "sqlserver" ]
 then
+	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=1433
 	echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD
