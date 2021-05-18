@@ -22,8 +22,8 @@ echo "Database vendor: $DB_VENDOR"
 if [ $DB_VENDOR = "hsqldb" ]
 then
 	echo "HSQLDB database: Embedded"
-	DRIVER=`find $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/lib -name hsqldb-\*.jar -print`
-	SQLTOOL=`find $TOMCAT_ROOT -name sqltool-\*.jar -print`
+	DRIVER=`find $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib -name hsqldb-\*.jar -print`
+	SQLTOOL=`find $TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db -name sqltool-\*.jar -print`
 	java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password="
 	exit $?
 elif [ $DB_VENDOR = "mysql" ]
