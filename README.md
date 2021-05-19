@@ -5,7 +5,7 @@ This repository contains an optimized and customized version of Apache Tomcat&re
 
 The default webapps have been removed, other changes are in the `conf` folder and 3 additional JARs have been included in the `lib` folder:
 
-- `simplicite-valves.jar` contains the optional valves that you can use along with Simplicit&eacute;
+- `simplicite-valves-x.y.z.jar` contains the optional valves that you can use along with Simplicit&eacute;
 - `mysql-connector-java-x.y.z-bin` the MySQL/MariaDB JDBC driver
 - `postgresql-x.y.z` the PostgreSQL JDBC driver
 
@@ -48,7 +48,7 @@ To automate the Tomcat start/stop create a `/etc/init.d/tomcat` init script with
 
 RETVAL=$?
 
-JAVA_HOME=/usr/lib/jvm/java-1.8.0
+JAVA_HOME=/usr/lib/jvm/java-11
 export JAVA_HOME
 
 PATH=$JAVA_HOME/bin:$PATH
