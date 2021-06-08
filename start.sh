@@ -102,7 +102,7 @@ then
 		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=3306
 		[ "$DB_SSL" = "" ] && DB_SSL=false
-		[ "$DB_ENGINE" = "" ] && DB_ENGINE=InnoDB
+		[ "$DB_MYISAM" = "" ] && DB_ENGINE=false
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
@@ -149,16 +149,10 @@ then
 			then
 				if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-mysql.dmp ]
 				then
-					if [ $DB_ENGINE = "MyISAM" ]
+					if [ $DB_MYISAM = "true" -o $DB_MYISAM = "yes" ]
 					then
 						echo "Forcing MyISAM engine"
 						sed -i 's/InnoDB/MyISAM/g' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-mysql.dmp
-						echo "Done"
-					fi
-					if [ $DB_ENGINE = "InnoDB" ]
-					then
-						echo "Forcing InnoDB engine"
-						sed -i 's/MyISAM/InnoDB/g' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-mysql.dmp
 						echo "Done"
 					fi
 					echo "Loading database..."
