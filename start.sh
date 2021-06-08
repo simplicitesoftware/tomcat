@@ -102,7 +102,7 @@ then
 		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=3306
 		[ "$DB_SSL" = "" ] && DB_SSL=false
-		[ "$DB_MYISAM" = "" ] && DB_ENGINE=false
+		[ "$DB_MYISAM" = "" ] && DB_MYISAM=false
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
