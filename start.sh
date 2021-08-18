@@ -81,7 +81,7 @@ then
 fi
 if [ "$CLUSTER" = "true" ]
 then
-	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
+	#export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
 	grep -q '<!-- CLUSTER Cluster' $TOMCAT_ROOT/conf/server.xml
 	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml ]
 	then
