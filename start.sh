@@ -79,18 +79,6 @@ then
 		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable the AJP connector"
 	fi
 fi
-if [ "$CLUSTER" = "true" ]
-then
-	#export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
-	grep -q '<!-- CLUSTER Cluster' $TOMCAT_ROOT/conf/server.xml
-	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml -a -w $TOMCAT_ROOT/webapps/META-INF/context.xml ]
-	then
-		sed -i 's/<!-- CLUSTER Cluster/<Cluster/;s/Cluster CLUSTER -->/Cluster>/' $TOMCAT_ROOT/conf/server.xml
-		sed -i 's/<Context/<Context distributable="true">/' $TOMCAT_ROOT/webapps/META-INF/context.xml
-	else
-		echo "WARNING: $TOMCAT_ROOT/conf/server.xml or $TOMCAT_ROOT/webapps/META-INF/context.xml is not writeable, unable to enable clustering"
-	fi
-fi
 export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/git}"
 [ "$JMX" = "true" -o ${TOMCAT_JMX_PORT:-0} -gt 0 ] && export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
@@ -534,6 +522,19 @@ then
 	fi
 else
 	[ -w $TOMCAT_ROOT/bin/startup.sh ] && sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
+fi
+
+if [ "$CLUSTER" = "true" ]
+then
+	#export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
+	grep -q '<!-- CLUSTER Cluster' $TOMCAT_ROOT/conf/server.xml
+	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml -a -w $TOMCAT_ROOT/webapps/META-INF/context.xml ]
+	then
+		sed -i 's/<!-- CLUSTER Cluster/<Cluster/;s/Cluster CLUSTER -->/Cluster>/' $TOMCAT_ROOT/conf/server.xml
+		sed -i 's/<Context/<Context distributable="true">/' $TOMCAT_ROOT/webapps/META-INF/context.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml or $TOMCAT_ROOT/webapps/META-INF/context.xml is not writeable, unable to enable clustering"
+	fi
 fi
 
 cd $TOMCAT_ROOT/bin
