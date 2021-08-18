@@ -449,7 +449,7 @@ EOF
 EOF
 	cp -f $TOMCAT_ROOT/favicon.ico $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
 	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/index.jsp << EOF
-<!DOCTYPE html>
+<% java.util.logging.Logger.getLogger(getClass().getName()).info("Request from " + request.getRemoteAddr()); %><!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8"/>
