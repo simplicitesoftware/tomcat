@@ -461,6 +461,8 @@ OS: <%= System.getProperty("os.name") + " " + System.getProperty("os.arch") + " 
 JVM: <%= System.getProperty("java.version") + " " + System.getProperty("java.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") %>
 Encoding: <%= System.getProperty("file.encoding") %>
 Server: <%= request.getServletContext().getServerInfo() %>
+Hostname: <%= java.net.InetAddress.getLocalHost().getHostName() %>
+Session ID: <%= request.getSession.getId() %>
 System date: <%= new java.util.Date() %>
 Environment variables:
 <%
@@ -485,6 +487,8 @@ EOF
 	"jvm": "<%= System.getProperty("java.version") + " " + System.getProperty("java.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") %>",
 	"encoding": "<%= System.getProperty("file.encoding") %>",
 	"server": "<%= request.getServletContext().getServerInfo() %>",
+	"hostname": "<%= java.net.InetAddress.getLocalHost().getHostName() %>",
+	"sessionId": "<%= request.getSession.getId() %>",
 	"systemdate": "<%= new java.util.Date() %>"
 }
 EOF
