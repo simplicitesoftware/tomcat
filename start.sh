@@ -462,7 +462,7 @@ JVM: <%= System.getProperty("java.version") + " " + System.getProperty("java.ven
 Encoding: <%= System.getProperty("file.encoding") %>
 Server: <%= request.getServletContext().getServerInfo() %>
 Hostname: <%= java.net.InetAddress.getLocalHost().getHostName() %>
-Session ID: <%= request.getSession.getId() %>
+Session ID: <%= request.getSession().getId() %>
 System date: <%= new java.util.Date() %>
 Environment variables:
 <%
@@ -488,7 +488,7 @@ EOF
 	"encoding": "<%= System.getProperty("file.encoding") %>",
 	"server": "<%= request.getServletContext().getServerInfo() %>",
 	"hostname": "<%= java.net.InetAddress.getLocalHost().getHostName() %>",
-	"sessionId": "<%= request.getSession.getId() %>",
+	"sessionId": "<%= request.getSession().getId() %>",
 	"systemdate": "<%= new java.util.Date() %>"
 }
 EOF
