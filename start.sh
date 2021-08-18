@@ -531,7 +531,7 @@ then
 	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml -a -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
 	then
 		sed -i 's/<!-- CLUSTER Cluster/<Cluster/;s/Cluster CLUSTER -->/Cluster>/' $TOMCAT_ROOT/conf/server.xml
-		sed -i 's/<Context/<Context distributable="true">/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+		sed -i 's/<Context/<Context distributable="true"/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
 	else
 		echo "WARNING: $TOMCAT_ROOT/conf/server.xml or $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to enable clustering"
 	fi
