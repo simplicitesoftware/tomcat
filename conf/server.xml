@@ -215,7 +215,7 @@
 
             <ClusterListener className="org.apache.catalina.ha.session.ClusterSessionListener"/>
 
-        </Clusterr CLUSTER -->
+        </Cluster CLUSTER -->
 
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html
