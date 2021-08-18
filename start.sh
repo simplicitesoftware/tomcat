@@ -8,6 +8,9 @@ then
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
+[ "$HOSTNAME" = "" ] && export HOSTNAME=`hostname`
+[ "$IP_ADDR" = "" ] && export IP_ADDR=`hostname -i`
+
 [ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
 TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
 echo "Tomcat root: $TOMCAT_ROOT"
@@ -62,7 +65,7 @@ then
 	then
 		sed -i 's/<!-- SSL Connector/<Connector/;s/Connector SSL -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
 	else
-		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable SSL connector"
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable the SSL connector"
 	fi
 fi
 if [ "$AJP" = "true" -o ${TOMCAT_AJP_PORT:-0} -gt 0 ]
@@ -73,7 +76,18 @@ then
 	then
 		sed -i 's/<!-- AJP Connector/<Connector/;s/Connector AJP -->/Connector>/' $TOMCAT_ROOT/conf/server.xml
 	else
-		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable SSL connector"
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable the AJP connector"
+	fi
+fi
+if [ "$CLUSTER" = "true" ]
+then
+	export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
+	grep -q '<!-- CLUSTER Cluster' $TOMCAT_ROOT/conf/server.xml
+	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml ]
+	then
+		sed -i 's/<!-- CLUSTER Cluster/<Cluster/;s/Cluster CLUSTER -->/Cluster>/' $TOMCAT_ROOT/conf/server.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/server.xml is not writeable, unable to enable clustering"
 	fi
 fi
 export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/git}"
