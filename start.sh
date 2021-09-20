@@ -415,7 +415,6 @@ then
 	echo -n "Generating default webapp... "
 	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
 	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
-	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF
 	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app
@@ -428,6 +427,14 @@ then
 	</welcome-file-list>
 </web-app>
 EOF
+	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes
+	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/logging.properties << EOF
+handlers = java.util.logging.ConsoleHandler
+java.util.logging.ConsoleHandler.level = FINE
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+java.util.logging.ConsoleHandler.encoding = UTF-8
+EOF
+	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF
 	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Context>
