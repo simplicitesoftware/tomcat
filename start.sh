@@ -434,6 +434,7 @@ EOF
 <Context>
 	<Manager pathname=""/>
 	<JarScanner scanClassPath="false"/>
+	<Valve className="com.simplicite.tomcat.valves.APISessionValve" debug="true"/>
 </Context>
 EOF
 	cp -f $TOMCAT_ROOT/favicon.ico $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
@@ -470,7 +471,8 @@ while (keys.hasMoreElements()) {
 </body>
 </html>
 EOF
-	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/api.jsp << EOF
+	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/api
+	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/api/index.jsp << EOF
 <%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%>{
 	"os": "<%= System.getProperty("os.name") + " " + System.getProperty("os.arch") + " " + System.getProperty("os.version") %>",
 	"jvm": "<%= System.getProperty("java.version") + " " + System.getProperty("java.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version") %>",
