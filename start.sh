@@ -89,6 +89,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$TOMCAT_LOG_ARGS" = "true" -o "$TOMCAT_LOG_ARGS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logargs=$TOMCAT_LOG_ARGS"
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
+[ "$TOMCAT_MAX_POST_SIZE" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxpostsize=$TOMCAT_MAX_POST_SIZE"
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 then
