@@ -90,6 +90,8 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 
+SYSPARAMS=`env | grep '^SIMPLICITE_SYSPARAM_' | awk -F= '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 21)"\x27;" } END { print "commit;" }'`
+
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 then
 	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
@@ -97,12 +99,21 @@ then
 	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
 	[ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
 	echo "Database vendor: $DB_VENDOR"
-	# Check if generic database configuration is enabled (e.g. in Doker images)
+	# Check if generic database configuration is enabled (e.g. in Docker images)
 	grep -q '<!-- database --><Resource' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
 	GENERIC_DB=$?
 	if [ $DB_VENDOR = "hsqldb" -a $GENERIC_DB = 0 ]
 	then
 		JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='sa' -Ddb.password='' -Ddb.driver='org.hsqldb.jdbcDriver' -Ddb.url='hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true'"
+		if [ "$SYSPARAMS" != "" ]
+		then
+			echo "Setting system parameters..."
+			WEBINF=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
+			DRIVER=`find $WEBINF -name hsqldb-\*.jar -print`
+			SQLTOOL=`find $WEBINF -name sqltool-\*.jar -print`
+			java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --sql="$SYSPARAMS"
+			echo "Done"
+		fi
 	elif [ $DB_VENDOR = "mysql" ]
 	then
 		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
@@ -183,6 +194,12 @@ then
 				exit 5
 			fi
 		fi
+		if [ "$SYSPARAMS" != "" ]
+		then
+			echo "Setting system parameters..."
+			mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME --execute="`echo $SYSPARAMS`"
+			echo "Done"
+		fi
 	elif [ $DB_VENDOR = "postgresql" ]
 	then
 		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
@@ -255,6 +272,12 @@ then
 				echo "ERROR: Database is not setup" >&2
 				exit 5
 			fi
+		fi
+		if [ "$SYSPARAMS" != "" ]
+		then
+			echo "Setting system parameters..."
+			PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -c "`echo $SYSPARAMS`"
+			echo "Done"
 		fi
 	elif [ $DB_VENDOR = "oracle" ]
 	then
@@ -339,6 +362,12 @@ EOF
 				exit 5
 			fi
 		fi
+		if [ "$SYSPARAMS" != "" ]
+		then
+			echo "Setting system parameters..."
+			echo $SYSPARAMS | sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME
+			echo "Done"
+		fi
 	elif [ $DB_VENDOR = "mssql" ]
 	then
 		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
@@ -411,6 +440,12 @@ EOF
 				echo "ERROR: Database is not setup" >&2
 				exit 5
 			fi
+		fi
+		if [ "$SYSPARAMS" != "" ]
+		then
+			echo "Setting system parameters..."
+			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "`echo $SYSPARAMS`"
+			echo "Done"
 		fi
 	fi
 elif [ -w $TOMCAT_ROOT/webapps ]
