@@ -91,7 +91,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 
-SYSPARAMS=`env | grep '^SIMPLICITE_SYSPARAM_' | awk -F= '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 21)"\x27;" }'`
+SYSPARAMS=`env | grep '^SYSPARAM_' | awk -F= '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }'`
 [ "$SYSPARAMS" != "" ] && SYSPARAMS="${SYSPARAMS}commit;"
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
