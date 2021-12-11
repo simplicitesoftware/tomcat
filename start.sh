@@ -113,8 +113,9 @@ then
 			WEBINF=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
 			DRIVER=`find $WEBINF -name hsqldb-\*.jar -print`
 			SQLTOOL=`find $WEBINF -name sqltool-\*.jar -print`
-			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true
-			echo "Done"
+			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true > /dev/null
+			RES=$?
+			[ $RES -eq 0 ] && echo "Done" || echo "Failed"
 		fi
 	elif [ $DB_VENDOR = "mysql" ]
 	then
