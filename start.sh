@@ -31,7 +31,6 @@ then
 	rm -fr $TOMCAT_ROOT/temp/*
 	if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 	then
-		find $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF -name \*.ser -exec rm -f {} \;
 		for DIR in src bin build jar maven cache recyclebin tmp
 		do
 			[ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/$DIR ] && rm -fr $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/$DIR/*
