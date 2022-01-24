@@ -57,18 +57,24 @@ export PATH
 TOMCAT_USER="simplicite"
 TOMCAT_HOME="/home/$TOMCAT_USER/tomcat"
 
-#TOMCAT_UID=`id -u $TOMCAT_USER`
-#JAVA_OPTS="-Dtomcat.adminport=${TOMCAT_UID}5 -Dtomcat.httpport=${TOMCAT_UID}8 -Dtomcat.httpsport=${TOMCAT_UID}3 -Dtomcat.ajpport=${TOMCAT_UID}9"
-JAVA_OPTS="-Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443" -Dtomcat.ajpport=8009"
+# JVM options
+JAVA_OPTS="-server -Dfile.encoding=UTF-8"
 
-JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=/home/$TOMCAT_USER/git -Dfile.encoding=UTF-8"
+# Server
+JAVA_OPTS="$JAVA_OPTS -Dserver.vendor=tomcat -Dserver.version=9"
 
 # Small
-#JAVA_OPTS="-Xms256m -Xmx512m"
+#JAVA_OPTS="$JAVA_OPTS -Xms256m -Xmx512m"
 # Medium
-JAVA_OPTS="-Xms512m -Xmx1024m"
+JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx1024m"
 # Large
-#JAVA_OPTS="-Xms1024m -Xmx2048m"
+#JAVA_OPTS="$JAVA_OPTS -Xms1024m -Xmx2048m"
+
+# Ports
+JAVA_OPTS=""$JAVA_OPTS -Dtomcat.adminport=8005 -Dtomcat.httpport=8080 -Dtomcat.httpsport=8443" -Dtomcat.ajpport=8009"
+
+# Git repository
+JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=/home/$TOMCAT_USER/git"
 
 export JAVA_OPTS
 
