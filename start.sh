@@ -533,6 +533,34 @@ EOF
 	echo "Done"
 fi
 
+if [ "$LOG4J_ROOT_LEVEL" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
+	then
+		sed -i "/Root/s/level=\"debug\"/level=\"$LOG4J_ROOT_LEVEL\"/" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to set root log level"
+	fi
+fi
+if [ "$LOGGING_CONSOLE_LEVEL" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
+	then
+		sed -i "/java.util.logging.ConsoleHandler.level/s/FINE/$LOGGING_CONSOLE_LEVEL/" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties is not writeable, unable to set console log level"
+	fi
+fi
+if [ "$LOGGING_FILE_LEVEL" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
+	then
+		sed -i "/java.util.logging.FileHandler.level/s/FINE/$LOGGING_FILE_LEVEL/" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties is not writeable, unable to set file log level"
+	fi
+fi
+
 if [ "$CORS" = "true" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
