@@ -468,7 +468,7 @@ then
 </web-app>
 EOF
 	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes
-	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/logging.properties << EOF
+	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties << EOF
 handlers = java.util.logging.ConsoleHandler
 java.util.logging.ConsoleHandler.level = FINE
 java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
