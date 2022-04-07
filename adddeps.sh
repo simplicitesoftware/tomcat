@@ -79,7 +79,7 @@ do
       <version>$VERSION</version>
     </dependency>
 EOF
-		PROPS="$PROPS,$GROUP:$ARTIFACT:$VERSION"
+		PROPS="$PROPS,$GROUP\\:$ARTIFACT\\:$VERSION"
 		N=`expr $N + 1`
 	else
 		echo -e "\e[31mERROR: Ignored malformed dependency: $DEP\e[0m" >&2
