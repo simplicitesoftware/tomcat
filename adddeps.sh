@@ -1,16 +1,26 @@
 #!/bin/bash
 
-
-if [ "$1" = "" -o "$1" = "--help" ]
+if [ "$JAVA_HOME" = "" ]
 then
-	echo "Usage `basename $0` <list of groupId:artifactId:version>" >&2
+	echo "JAVA_HOME is not set" >&2
 	exit 1
 fi
+export PATH=$JAVA_HOME/bin:$PATH
+
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
+TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
+echo "Tomcat root: $TOMCAT_ROOT"
 
 if [ "$MAVEN_HOME" = "" ]
 then
 	echo "MAVEN_HOME is not set" >&2
-	exit -1
+	exit 1
+fi
+
+if [ "$1" = "" -o "$1" = "--help" ]
+then
+	echo "Usage `basename $0` [--force] <list of groupId:artifactId:version>" >&2
+	exit 1
 fi
 
 FORCE=0
