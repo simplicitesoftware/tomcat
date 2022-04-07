@@ -35,12 +35,13 @@ DIR=`pwd`
 popd > /dev/null
 TMP="/tmp/`basename $0 .sh`-$$"
 
-LIB="$TOMCAT_ROOT/webapps//${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib"
+LIB="$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib"
 if [ ! -w $LIB ]
 then
 	echo "Target lib directory ($LIB) does not exists or is not writeable" >&2
 	exit 2
 fi
+GLB="$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/classes/com/simplicite/globals.properties"
 
 REG="$HOME/.m2"
 
@@ -61,6 +62,7 @@ cat << EOF > pom.xml
   <dependencies>
 EOF
 
+PROPS=""
 N=0
 for DEP in $*
 do
@@ -77,6 +79,7 @@ do
       <version>$VERSION</version>
     </dependency>
 EOF
+		PROPS="$PROPS,$GROUP:$ARTIFACT:$VERSION"
 		N=`expr $N + 1`
 	else
 		echo -e "\e[31mERROR: Ignored malformed dependency: $DEP\e[0m" >&2
@@ -109,7 +112,7 @@ for FILE in `ls -1 $TRG`
 do
 	if [ -f $LIB/$FILE ]
 	then
-		echo -e "\e[33mWARNING: $FILE already exists, ignored\e[0m"
+		echo -e "\e[33m- $FILE already exists, ignored\e[0m"
 	else
 		P=`echo $FILE | sed -r 's/-[0-9]+(\.[0-9]+).jar$//'`
 		F=`ls $LIB/$P* 2>/dev/null`
@@ -117,17 +120,18 @@ do
 		then
 			if [ $FORCE -eq 0 ]
 			then
-				echo -e "\e[31mERROR: Another version of $FILE already exists (`basename $F`), ignored\e[0m"
+				echo -e "\e[33m- Another version of $FILE already exists (`basename $F`), ignored\e[0m"
 			else
-				echo -e "\e[33mWARNING: Another version of $FILE already exists: (`basename $F`), copied but \e[1mZZZZZ THIS MAY RESULT IN UNEXPECTED BEHAVIOR ZZZZZ\e[0m"
+				echo -e "\e[31m- Another version of $FILE already exists (`basename $F`), copied but \e[1mZZZZZ THIS MAY RESULT IN UNEXPECTED BEHAVIOR ZZZZZ\e[0m"
 				cp $TRG/$FILE $LIB
 			fi
 		else
-			echo -e "\e[32mINFO: $FILE copied\e[0m"
+			echo -e "\e[32m- $FILE copied\e[0m"
 			cp $TRG/$FILE $LIB
 		fi
 	fi
 done
+sed -i "/platform.devdependencies=/s/$/$PROPS/" $GLB
 echo "Done"
 
 popd > /dev/null
