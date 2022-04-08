@@ -564,6 +564,17 @@ then
 	fi
 fi
 
+if [ "$HEALTH_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- healthwhitelist --><!-- /<!-- iowhitelist --></;s/ --><!-- iowhitelist -->/><!-- healthwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@healthwhitelist@~${HEALTH_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set health check white list"
+	fi
+fi
+
 if [ "$IO_WHITELIST" != "" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
