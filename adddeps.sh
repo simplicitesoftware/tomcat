@@ -108,15 +108,15 @@ echo "Done"
 TRG="target/dependency"
 
 echo "Copying dependencies..."
-for FILE in `ls -1 $TRG`
+for FILE in `ls -1 $TRG | sort -r`
 do
 	if [ -f $LIB/$FILE ]
 	then
 		echo -e "\e[33m- $FILE already exists, ignored\e[0m"
 	else
-		P=`echo $FILE | sed -r 's/-[0-9]+(\..+)*.jar$//'`
-		F=`ls $LIB/$P* 2>/dev/null`
-		if [ ! -z "$F" ]
+		P=`echo $FILE | sed -r 's/(.*)-[0-9]+(\..+)*.jar$/\1/'`
+		F=`ls $LIB/$P-*.jar | 2>/dev/null | head -1`
+		if [ "$F" != "" ]
 		then
 			if [ $FORCE -eq 0 ]
 			then
