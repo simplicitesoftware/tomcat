@@ -114,7 +114,7 @@ do
 	then
 		echo -e "\e[33m- $FILE already exists, ignored\e[0m"
 	else
-		P=`echo $FILE | sed -r 's/-[0-9]+(\.[0-9]+).jar$//'`
+		P=`echo $FILE | sed -r 's/-[0-9]+(\..+)*.jar$//'`
 		F=`ls $LIB/$P* 2>/dev/null`
 		if [ ! -z "$F" ]
 		then
