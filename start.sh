@@ -561,6 +561,50 @@ then
 	fi
 fi
 
+if [ "$IO_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- iowhitelist --><!-- /<!-- iowhitelist --></;s/ --><!-- iowhitelist -->/><!-- iowhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@iowhitelist@~${IO_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set I/O endpoint white list"
+	fi
+fi
+
+if [ "$GIT_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- gitwhitelist --><!-- /<!-- gitwhitelist --></;s/ --><!-- gitwhitelist -->/><!-- gitwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@gitwhitelist@~${GIT_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set Git enpoint white list"
+	fi
+fi
+
+if [ "$API_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- apiwhitelist --><!-- /<!-- apiwhitelist --></;s/ --><!-- apiwhitelist -->/><!-- apiwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@apiwhitelist@~${API_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set API enpoint white list"
+	fi
+fi
+
+if [ "$UI_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- uiwhitelist --><!-- /<!-- uiwhitelist --></;s/ --><!-- uiwhitelist -->/><!-- uiwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@apiwhitelist@~${UI_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set UI enpoint white list"
+	fi
+fi
+
 if [ "$CORS" = "true" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
