@@ -62,6 +62,17 @@ cat << EOF > pom.xml
   <dependencies>
 EOF
 
+if [ "$MAVEN_REPOSITORY" != "" ]
+then
+	cat << EOF >> pom.xml
+  <repositories>
+    <repository>
+      <url>${MAVEN_REPOSITORY}</url>
+    </repository>
+  </repositories>
+EOF
+fi
+
 PROPS=""
 N=0
 for DEP in $*
