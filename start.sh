@@ -499,6 +499,9 @@ JVM: <%= System.getProperty("java.version") + " " + System.getProperty("java.ven
 Encoding: <%= System.getProperty("file.encoding") %>
 Server: <%= request.getServletContext().getServerInfo() %>
 Hostname: <%= java.net.InetAddress.getLocalHost().getHostName() %>
+Remote host: <%= request.getRemoteHost() %>
+Remote port: <%= request.getRemotePort() %>
+Remote address: <%= request.getRemoteAddr() %>
 Session ID: <%= request.getSession().getId() %>
 System date: <%= new java.util.Date() %>
 Environment variables:
