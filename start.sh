@@ -597,6 +597,17 @@ then
 	fi
 fi
 
+if [ "$MAVEN_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- mavenwhitelist --><!-- /<!-- iowhitelist --></;s/ --><!-- iowhitelist -->/><!-- mavenwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@healthwhitelist@~${MAVEN_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set Maven repository white list"
+	fi
+fi
+
 if [ "$API_WHITELIST" != "" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
