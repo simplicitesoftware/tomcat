@@ -545,6 +545,34 @@ then
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to set root log level"
 	fi
 fi
+if [ ${LOG4J_CONSOLE:-true} = "true" -o ${LOG4J_CONSOLE:-true} = "false" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
+	then
+		if [ ${LOG4J_CONSOLE:-true} = "false" ]
+		then
+			sed -i 's/<AppenderRef ref="SIMPLICITE-CONSOLE"\/>/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"/ -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+		else
+			sed -i 's/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"\/ -->/<AppenderRef ref="SIMPLICITE-CONSOLE"/>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+		fi
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to enable/disable console appender"
+	fi
+fi
+if [ ${LOG4J_FILE:-true} = "true" -o ${LOG4J_FILE:-true} = "false" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
+	then
+		if [ ${LOG4J_FILE:-true} = "false" ]
+		then
+			sed -i 's/<AppenderRef ref="SIMPLICITE-FILE"\/>/<!-- AppenderRef ref="SIMPLICITE-FILE"/ -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+		else
+			sed -i 's/<!-- AppenderRef ref="SIMPLICITE-FILE"\/ -->/<AppenderRef ref="SIMPLICITE-FILE"/>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+		fi
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to enable/disable file appender"
+	fi
+fi
 if [ "$LOGGING_CONSOLE_LEVEL" != "" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
