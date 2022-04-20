@@ -551,9 +551,9 @@ then
 	then
 		if [ ${LOG4J_CONSOLE:-true} = "false" ]
 		then
-			sed -i 's/<AppenderRef ref="SIMPLICITE-CONSOLE"\/>/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"/ -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+			sed -i 's/<AppenderRef ref="SIMPLICITE-CONSOLE"\/>/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"\/ -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
 		else
-			sed -i 's/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"\/ -->/<AppenderRef ref="SIMPLICITE-CONSOLE"/>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+			sed -i 's/<!-- AppenderRef ref="SIMPLICITE-CONSOLE"\/ -->/<AppenderRef ref="SIMPLICITE-CONSOLE"\/>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
 		fi
 	else
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to enable/disable console appender"
@@ -565,9 +565,9 @@ then
 	then
 		if [ ${LOG4J_FILE:-true} = "false" ]
 		then
-			sed -i 's/<AppenderRef ref="SIMPLICITE-FILE"\/>/<!-- AppenderRef ref="SIMPLICITE-FILE"/ -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+			sed -i 's/<AppenderRef ref="SIMPLICITE-FILE"\/>/<!-- AppenderRef ref="SIMPLICITE-FILE"\/ -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
 		else
-			sed -i 's/<!-- AppenderRef ref="SIMPLICITE-FILE"\/ -->/<AppenderRef ref="SIMPLICITE-FILE"/>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+			sed -i 's/<!-- AppenderRef ref="SIMPLICITE-FILE"\/ -->/<AppenderRef ref="SIMPLICITE-FILE"\/>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
 		fi
 	else
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to enable/disable file appender"
