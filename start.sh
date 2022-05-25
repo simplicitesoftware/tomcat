@@ -476,6 +476,21 @@ java.util.logging.ConsoleHandler.level = FINE
 java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
 java.util.logging.ConsoleHandler.encoding = UTF-8
 EOF
+	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+	<Appenders>
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="%highlight{%date|%marker|%level|%message%n%throwable}{FATAL=magenta, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=blue}"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="CONSOLE"/>
+		</Root>
+	</Loggers>
+</Configuration>
+EOF
 	mkdir $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF
 	cat > $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml << EOF
 <?xml version="1.0" encoding="UTF-8"?>
