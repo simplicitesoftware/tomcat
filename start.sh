@@ -52,7 +52,7 @@ then
 	echo "Done"
 fi
 
-export JAVA_OPTS="$JAVA_OPTS -server -Dserver.vendor=tomcat -Dserver.version=9 -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-`date +%Z`} -Dplatform.autoupgrade=true -Dtomcat.webapp=$TOMCAT_WEBAPP"
+export JAVA_OPTS="$JAVA_OPTS -server -Dserver.vendor=tomcat -Dserver.version=9 -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-${TZ:-`date +%Z`}} -Dplatform.autoupgrade=true -Dtomcat.webapp=$TOMCAT_WEBAPP"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.ajpredirectport=${TOMCAT_AJPREDIRECTPORT:-443}"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSIZE:-8192} -Dtomcat.maxthreads=${TOMCAT_MAXTHREADS:-200} -Dtomcat.maxconnections=${TOMCAT_MAXCONNECTIONS:-8192} -Dtomcat.maxpostsize=${TOMCAT_MAXPOSTSIZE:--1}"
 [ "$GZIP" = "true" -o "$TOMCAT_COMPRESSION" = "on" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.compression=on"
@@ -131,7 +131,7 @@ then
 		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
 		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.mysql.cj.jdbc.Driver' -Ddb.url='mysql://$DB_HOST:$DB_PORT/$DB_NAME?autoReconnect=true&useSSL=$DB_SSL&allowPublicKeyRetrieval=true&characterEncoding=utf8&characterResultSets=utf8&serverTimezone=${TOMCAT_TIMEZONE:-`date +%Z`}'"
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.mysql.cj.jdbc.Driver' -Ddb.url='mysql://$DB_HOST:$DB_PORT/$DB_NAME?autoReconnect=true&useSSL=$DB_SSL&allowPublicKeyRetrieval=true&characterEncoding=utf8&characterResultSets=utf8&serverTimezone=${TOMCAT_TIMEZONE:-${TZ:-`date +%Z`}}'"
 		else
 			JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME -Dmysql.ssl=$DB_SSL"
 			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
