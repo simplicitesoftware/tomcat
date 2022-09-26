@@ -716,6 +716,16 @@ else
 	[ -w $TOMCAT_ROOT/bin/startup.sh ] && sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
 fi
 
+if [ "$SECURE_COOKIES" = "true" ]
+then
+	if [ -w $TOMCAT_ROOT/conf/web.xml ]
+	then
+		sed -i 's/<!-- cookie-config>/<cookie-config></;s/</cookie-config -->/</cookie-config>/' $TOMCAT_ROOT/conf/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/conf/web.xml is not writeable, unable to set cookiee-related options"
+	fi
+fi
+
 if [ "$CLUSTER" = "true" ]
 then
 	#export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
