@@ -718,11 +718,11 @@ fi
 
 if [ "$SECURE_COOKIES" = "true" ]
 then
-	if [ -w $TOMCAT_ROOT/conf/web.xml ]
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
-		sed -i 's/<!-- cookie-config>/<cookie-config>/;s/<\/cookie-config -->/<\/cookie-config>/' $TOMCAT_ROOT/conf/web.xml
+		sed -i 's/<!-- cookie-config>/<cookie-config>/;s/<\/cookie-config -->/<\/cookie-config>/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
 	else
-		echo "WARNING: $TOMCAT_ROOT/conf/web.xml is not writeable, unable to set cookiee-related options"
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set cookiee-related options"
 	fi
 fi
 
