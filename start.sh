@@ -6,10 +6,14 @@ then
 	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
 	exit 1
 fi
+echo "Java home: $JAVA_HOME"
 export PATH=$JAVA_HOME/bin:$PATH
+
+echo "User: `whoami`"
 
 [ "$HOSTNAME" = "" ] && export HOSTNAME=`hostname`
 [ "$IP_ADDR" = "" ] && export IP_ADDR=`hostname -i`
+echo "Hostname: $HOSTNAME ($IP_ADDR)"
 
 [ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
 TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
