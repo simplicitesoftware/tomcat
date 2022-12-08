@@ -768,6 +768,7 @@ cd ..
 
 function shutdown() {
 	echo 'Signal trapped'
+	cd $TOMCAT_ROOT/bin;
 	./shutdown.sh
 	exit -1
 }
