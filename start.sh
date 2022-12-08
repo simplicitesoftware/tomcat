@@ -766,10 +766,17 @@ cd $TOMCAT_ROOT/bin
 ./startup.sh
 cd ..
 
+function shutdown() {
+	echo 'Signal trapped'
+	./shutdown.sh
+	exit -1
+}
+
 if [ "$1" = "-t"  -o "$1" = "--tail" ]
 then
 	LOG=logs/catalina.out
 	while [ ! -f $LOG ]; do echo -n "."; sleep 1; done
+	trap shutdown SIGINT SIGTERM ERR EXIT
 	tail -f $LOG
 fi
 
