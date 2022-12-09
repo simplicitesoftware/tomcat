@@ -720,25 +720,6 @@ then
 	fi
 fi
 
-if [ "$JPDA" = "true" ]
-then
-	if [ -w $TOMCAT_ROOT/bin/startup.sh ]
-	then
-		echo ""
-		echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-		echo "ZZZ Tomcat is running in debug mode, this is not suitable for production ZZZ"
-		echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-		echo ""
-		[ "$JPDA_SUSPEND" = "true" ] && export JPDA_SUSPEND=y
-		[ "$JPDA_SUSPEND" = "false" ] && export JPDA_SUSPEND=n
-		sed -i '/^exec /s/" start /" jpda start /' $TOMCAT_ROOT/bin/startup.sh
-	else
-		echo "WARNING: $TOMCAT_ROOT/bin/startup.sh is not writeable, unable to set debug mode"
-	fi
-else
-	[ -w $TOMCAT_ROOT/bin/startup.sh ] && sed -i '/^exec /s/" jpda start /" start /' $TOMCAT_ROOT/bin/startup.sh
-fi
-
 if [ "$SECURE_COOKIES" = "true" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
@@ -762,23 +743,52 @@ then
 	fi
 fi
 
-cd $TOMCAT_ROOT/bin
-./startup.sh
-cd ..
-
-function shutdown() {
-	echo 'Clean shutdown requested'
-	cd $TOMCAT_ROOT/bin;
-	./shutdown.sh
-	exit -1
-}
-trap shutdown SIGINT SIGTERM
-
-if [ "$1" = "-t"  -o "$1" = "--tail" ]
+if [ "$1" = "-r" -o "$1" = "--run" ]
 then
-	LOG=logs/catalina.out
-	while [ ! -f $LOG ]; do echo -n "."; sleep 1; done
-	tail -f $LOG
+	cd $TOMCAT_ROOT/bin
+
+	if [ "$JPDA" = "true" ]
+	then
+		echo ""
+		echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+		echo "ZZZ Tomcat is running in debug mode, this is not suitable for production ZZZ"
+		echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+		echo ""
+		exec ./catalina.sh jpda run
+	else
+		exec ./catalina.sh run
+	fi
+else
+	cd $TOMCAT_ROOT/bin
+
+	if [ "$JPDA" = "true" ]
+	then
+		if [ -w startup.sh ]
+		then
+			echo ""
+			echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+			echo "ZZZ Tomcat is running in debug mode, this is not suitable for production ZZZ"
+			echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+			echo ""
+			[ "$JPDA_SUSPEND" = "true" ] && export JPDA_SUSPEND=y
+			[ "$JPDA_SUSPEND" = "false" ] && export JPDA_SUSPEND=n
+			sed -i '/^exec /s/" start /" jpda start /' startup.sh
+		else
+			echo "WARNING: $TOMCAT_ROOT/bin/startup.sh is not writeable, unable to set debug mode"
+		fi
+	else
+		[ -w startup.sh ] && sed -i '/^exec /s/" jpda start /" start /' startup.sh
+	fi
+
+	./startup.sh
+	cd ..
+	
+	if [ "$1" = "-t" -o "$1" = "--tail" ]
+	then
+		LOG=logs/catalina.out
+		while [ ! -f $LOG ]; do echo -n "."; sleep 1; done
+		tail -f $LOG
+	fi
 fi
 
 exit 0
