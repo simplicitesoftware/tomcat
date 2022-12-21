@@ -398,6 +398,7 @@ EOF
 	then
 		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
 		[ "$DB_PORT" = "" ] && DB_PORT=1433
+		[ "$DB_SSL" = "" ] && DB_SSL=false
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
@@ -408,7 +409,7 @@ EOF
 		then
 			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.microsoft.sqlserver.jdbc.SQLServerDriver' -Ddb.url='sqlserver://$DB_HOST:$DB_PORT;databaseName=$DB_NAME;encrypt=$DB_SSL;trustServerCertificate=true$DB_OPTS'"
 		else
-			JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME"
+			JAVA_OPTS="$JAVA_OPTS -Dmssql.user=$DB_USER -Dmssql.password=$DB_PASSWORD -Dmssql.host=$DB_HOST -Dmssql.port=$DB_PORT -Dmssql.database=$DB_NAME -Dmssql.ssl=$DB_SSL"
 			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
 			then
 				sed -i 's/<!-- hsqldb --><Resource/<!-- hsqldb --><!-- Resource/;s/<\/Resource><!-- hsqldb -->/<\/Resource --><!-- hsqldb -->/;s/<!-- mssql --><!-- Resource/<!-- mssql --><Resource/;s/<\/Resource --><!-- mssql -->/<\/Resource><!-- mssql -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
