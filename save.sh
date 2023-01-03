@@ -7,8 +7,8 @@ then
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
-TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"

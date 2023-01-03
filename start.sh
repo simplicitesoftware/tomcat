@@ -9,14 +9,14 @@ fi
 echo "Java home: $JAVA_HOME"
 export PATH=$JAVA_HOME/bin:$PATH
 
-echo "User: `whoami`"
+echo "User: $(whoami)"
 
-[ "$HOSTNAME" = "" ] && export HOSTNAME=`hostname`
-[ "$IP_ADDR" = "" ] && export IP_ADDR=`hostname -i`
+[ "$HOSTNAME" = "" ] && export HOSTNAME=$(hostname)
+[ "$IP_ADDR" = "" ] && export IP_ADDR=$(hostname -i)
 echo "Hostname: $HOSTNAME ($IP_ADDR)"
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
-TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
 if [ -d $TOMCAT_ROOT/.ssh -o ! -z "$SSH_KNOWN_HOSTS" ]
@@ -31,7 +31,7 @@ then
 		touch $HOME/.ssh/known_hosts
 		for HOST in $SSH_KNOWN_HOSTS
 		do
-			H=`grep "^$HOST " $HOME/.ssh/known_hosts`
+			H=$(grep "^$HOST " $HOME/.ssh/known_hosts)
 			[ "$H" = "" ] && ssh-keyscan $HOST >> $HOME/.ssh/known_hosts
 		done
 	fi
@@ -75,7 +75,7 @@ then
 	echo "Done"
 fi
 
-export JAVA_OPTS="$JAVA_OPTS -server -Dserver.vendor=tomcat -Dserver.version=9 -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-${TZ:-`date +%Z`}} -Dplatform.autoupgrade=true -Dtomcat.webapp=$TOMCAT_WEBAPP"
+export JAVA_OPTS="$JAVA_OPTS -server -Dserver.vendor=tomcat -Dserver.version=9 -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-${TZ:-$(date +%Z)}} -Dplatform.autoupgrade=true -Dtomcat.webapp=$TOMCAT_WEBAPP"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.ajpredirectport=${TOMCAT_AJPREDIRECTPORT:-443}"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSIZE:-8192} -Dtomcat.maxthreads=${TOMCAT_MAXTHREADS:-200} -Dtomcat.maxconnections=${TOMCAT_MAXCONNECTIONS:-8192} -Dtomcat.maxpostsize=${TOMCAT_MAXPOSTSIZE:--1}"
 [ "$GZIP" = "true" -o "$TOMCAT_COMPRESSION" = "on" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.compression=on"
@@ -114,7 +114,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
 
-SYSPARAMS=`env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }'`
+SYSPARAMS=$(env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }')
 [ "$SYSPARAMS" != "" ] && SYSPARAMS="${SYSPARAMS}commit;"
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
@@ -134,8 +134,8 @@ then
 		then
 			echo "Setting system parameters..."
 			WEBINF=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
-			DRIVER=`find $WEBINF -name hsqldb-\*.jar -print`
-			SQLTOOL=`find $WEBINF -name sqltool-\*.jar -print`
+			DRIVER=$(find $WEBINF -name hsqldb-\*.jar -print)
+			SQLTOOL=$(find $WEBINF -name sqltool-\*.jar -print)
 			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true > /dev/null
 			RES=$?
 			[ $RES -eq 0 ] && echo "Done" || echo "Failed"
@@ -154,7 +154,7 @@ then
 		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
 		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.mysql.cj.jdbc.Driver' -Ddb.url='mysql://$DB_HOST:$DB_PORT/$DB_NAME?autoReconnect=true&useSSL=$DB_SSL&allowPublicKeyRetrieval=true&characterEncoding=utf8&characterResultSets=utf8&serverTimezone=${TOMCAT_TIMEZONE:-${TZ:-`date +%Z`}}$DB_OPTS'"
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='com.mysql.cj.jdbc.Driver' -Ddb.url='mysql://$DB_HOST:$DB_PORT/$DB_NAME?autoReconnect=true&useSSL=$DB_SSL&allowPublicKeyRetrieval=true&characterEncoding=utf8&characterResultSets=utf8&serverTimezone=${TOMCAT_TIMEZONE:-${TZ:-$(date +%Z)}}$DB_OPTS'"
 		else
 			JAVA_OPTS="$JAVA_OPTS -Dmysql.user=$DB_USER -Dmysql.password=$DB_PASSWORD -Dmysql.host=$DB_HOST -Dmysql.port=$DB_PORT -Dmysql.database=$DB_NAME -Dmysql.ssl=$DB_SSL"
 			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
@@ -170,7 +170,7 @@ then
 		N=0
 		while [ $N -lt $W ]
 		do
-			N=`expr $N + 1`
+			N=$(expr $N + 1)
 			echo "exit" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME
 			RET=$?
 			if [ $RET -ne 0 ]
@@ -185,7 +185,7 @@ then
 				fi
 			fi
 		done
-		EXISTS=`echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME`
+		EXISTS=$(echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME)
 		if [ "$EXISTS" = "" ]
 		then
 			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
@@ -223,7 +223,7 @@ then
 		if [ "$SYSPARAMS" != "" ]
 		then
 			echo "Setting system parameters..."
-			mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME --execute="`echo $SYSPARAMS`"
+			mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME --execute="$(echo $SYSPARAMS)"
 			echo "Done"
 		fi
 	elif [ $DB_VENDOR = "postgresql" ]
@@ -255,7 +255,7 @@ then
 		N=0
 		while [ $N -lt $W ]
 		do
-			N=`expr $N + 1`
+			N=$(expr $N + 1)
 			echo "\q" | PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
 			RET=$?
 			if [ $RET -ne 0 ]
@@ -270,7 +270,7 @@ then
 				fi
 			fi
 		done
-		EXISTS=`echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME`
+		EXISTS=$(echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME)
 		if [ "$EXISTS" = "" ]
 		then
 			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
@@ -302,7 +302,7 @@ then
 		if [ "$SYSPARAMS" != "" ]
 		then
 			echo "Setting system parameters..."
-			PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -c "`echo $SYSPARAMS`"
+			PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -c "$(echo $SYSPARAMS)"
 			echo "Done"
 		fi
 	elif [ $DB_VENDOR = "oracle" ]
@@ -333,7 +333,7 @@ then
 		N=0
 		while [ $N -lt $W ]
 		do
-			N=`expr $N + 1`
+			N=$(expr $N + 1)
 			sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF > /dev/null 2>&1
 whenever sqlerror exit 1;
 select 1 from dual;
@@ -423,7 +423,7 @@ EOF
 		N=0
 		while [ $N -lt $W ]
 		do
-			N=`expr $N + 1`
+			N=$(expr $N + 1)
 			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "select 1"
 			RET=$?
 			if [ $RET -ne 0 ]
@@ -471,7 +471,7 @@ EOF
 		if [ "$SYSPARAMS" != "" ]
 		then
 			echo "Setting system parameters..."
-			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "`echo $SYSPARAMS`"
+			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "$(echo $SYSPARAMS)"
 			echo "Done"
 		fi
 	fi

@@ -7,8 +7,8 @@ then
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
-TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
@@ -25,8 +25,8 @@ then
 	if [ -d $WEBINF_DIR/db ]
 	then
 		echo "HSQLDB database: Embedded"
-		DRIVER=`find $WEBINF_DIR -name hsqldb-\*.jar -print`
-		SQLTOOL=`find $WEBINF_DIR -name sqltool-\*.jar -print`
+		DRIVER=$(find $WEBINF_DIR -name hsqldb-\*.jar -print)
+		SQLTOOL=$(find $WEBINF_DIR -name sqltool-\*.jar -print)
 		java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password="
 		exit $?
 	else

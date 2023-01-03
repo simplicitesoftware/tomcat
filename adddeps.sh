@@ -7,8 +7,8 @@ then
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=`dirname $0`
-TOMCAT_ROOT=`realpath $TOMCAT_ROOT`
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
 if [ "$MAVEN_HOME" = "" ]
@@ -19,7 +19,7 @@ fi
 
 if [ "$1" = "" -o "$1" = "--help" ]
 then
-	echo "Usage `basename $0` [--force] <list of groupId:artifactId:version>" >&2
+	echo "Usage $(basename $0) [--force] <list of groupId:artifactId:version>" >&2
 	exit 1
 fi
 
@@ -30,10 +30,10 @@ then
 	shift
 fi
 
-pushd `dirname $0` > /dev/null
-DIR=`pwd`
+pushd $(dirname $0) > /dev/null
+DIR=$(pwd)
 popd > /dev/null
-TMP="/tmp/`basename $0 .sh`-$$"
+TMP="/tmp/$(basename $0 .sh)-$$"
 
 LIB="$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib"
 if [ ! -w $LIB ]
@@ -77,9 +77,9 @@ PROPS=""
 N=0
 for DEP in $*
 do
-	GROUP=`echo $DEP | cut -d : -f 1`
-	ARTIFACT=`echo $DEP | cut -d : -f 2`
-	VERSION=`echo $DEP | cut -d : -f 3`
+	GROUP=$(echo $DEP | cut -d : -f 1)
+	ARTIFACT=$(echo $DEP | cut -d : -f 2)
+	VERSION=$(echo $DEP | cut -d : -f 3)
 
 	if [ ! -z "$GROUP" -a ! -z "$ARTIFACT" -a ! -z "$VERSION" ]
 	then
@@ -91,7 +91,7 @@ do
     </dependency>
 EOF
 		PROPS="$PROPS,$GROUP\\\\:$ARTIFACT\\\\:$VERSION"
-		N=`expr $N + 1`
+		N=$(expr $N + 1)
 	else
 		echo -e "\e[31mERROR: Ignored malformed dependency: $DEP\e[0m" >&2
 	fi
@@ -119,21 +119,21 @@ echo "Done"
 TRG="target/dependency"
 
 echo "Copying dependencies..."
-for FILE in `ls -1 $TRG | sort -r`
+for FILE in $(ls -1 $TRG | sort -r)
 do
 	if [ -f $LIB/$FILE ]
 	then
 		echo -e "\e[33m- $FILE already exists, ignored\e[0m"
 	else
-		P=`echo $FILE | sed -r 's/(.*)-[0-9]+(\..+)*.jar$/\1/'`
-		F=`ls $LIB/$P-*.jar 2> /dev/null | head -1`
+		P=$(echo $FILE | sed -r 's/(.*)-[0-9]+(\..+)*.jar$/\1/')
+		F=$(ls $LIB/$P-*.jar 2> /dev/null | head -1)
 		if [ "$F" != "" ]
 		then
 			if [ $FORCE -eq 0 ]
 			then
-				echo -e "\e[33m- Another version of $FILE already exists (`basename $F`), ignored\e[0m"
+				echo -e "\e[33m- Another version of $FILE already exists : $(basename $F), ignored\e[0m"
 			else
-				echo -e "\e[31m- Another version of $FILE already exists (`basename $F`), copied but \e[1mZZZZZ THIS MAY RESULT IN UNEXPECTED BEHAVIOR ZZZZZ\e[0m"
+				echo -e "\e[31m- Another version of $FILE already exists : $(basename $F), copied but \e[1mZZZZZ THIS MAY RESULT IN UNEXPECTED BEHAVIOR ZZZZZ\e[0m"
 				cp $TRG/$FILE $LIB
 			fi
 		else
