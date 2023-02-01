@@ -474,6 +474,9 @@ EOF
 			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "$(echo $SYSPARAMS)"
 			echo "Done"
 		fi
+	else
+		echo "ERROR: Unknown database vendor ($DB_VENDOR)" >&2
+		exit 8
 	fi
 elif [ -w $TOMCAT_ROOT/webapps ]
 then

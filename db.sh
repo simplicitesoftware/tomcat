@@ -2,7 +2,7 @@
 
 if [ "$JAVA_HOME" = "" ]
 then
-	echo "JAVA_HOME is not set" >&2
+	echo "ERROR: JAVA_HOME is not set" >&2
 	exit 1
 fi
 export PATH=$JAVA_HOME/bin:$PATH
@@ -30,7 +30,7 @@ then
 		java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password="
 		exit $?
 	else
-		echo "No database directory: $WEBINF_DIR/db" >&2
+		echo "ERROR: No database directory ($WEBINF_DIR/db)" >&2
 		exit 3
 	fi
 elif [ $DB_VENDOR = "mysql" ]
@@ -62,6 +62,6 @@ then
 	sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD
 	exit $?
 else
-	echo "Unknown vendor: $DB_VENDOR" >&2
+	echo "ERROR: Unknown database vendor ($DB_VENDOR)" >&2
 	exit 3
 fi

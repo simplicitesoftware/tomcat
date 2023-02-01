@@ -2,7 +2,7 @@
 
 if [ "$JAVA_HOME" = "" ]
 then
-	echo "JAVA_HOME is not set" >&2
+	echo "ERROR: JAVA_HOME is not set" >&2
 	exit 1
 fi
 export PATH=$JAVA_HOME/bin:$PATH
@@ -16,7 +16,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 DB_DIR=$DB_DIR/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db
 if [ ! -d $DB_DIR ]
 then
-	echo "No database directory: $DB_DIR" >&2
+	echo "ERROR: No database directory ($DB_DIR)" >&2
 	exit 2
 fi
 
@@ -60,6 +60,6 @@ then
 	sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "backup database $DB_NAME to disk='$DB_DIR/simplicite-mssql.dmp' with no_log"
 	exit $?
 else
-	echo "Unknown database vendor: $DB_VENDOR" >&2
+	echo "ERROR: Unknown database vendor ($DB_VENDOR)" >&2
 	exit 3
 fi
