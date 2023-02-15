@@ -121,6 +121,7 @@ then
 		JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
 		JCCDESTDIR=`dirname $JCCDESTFILE`
 		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
+		rm -f $JCCDESTFILE
 		JCCINCLUDES=""
 		JCCEXCLUDES=""
 		for MODULE in ${JACOCO_MODULES//,/ }
