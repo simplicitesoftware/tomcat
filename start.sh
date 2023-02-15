@@ -113,6 +113,19 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
+if [ "$JACOCO_MODULES" != "" ]
+then
+	INCLUDES=""
+	EXCLUDES=""
+	for MODULE in $JACOCO_MODULES
+	do
+		[ "$INCLUDES" != "" ] && INCLUDES="${INCLUDES}:"
+		[ "$EXCLUDES" != "" ] && EXCLUDES="${EXCLUDES}:"
+		INCLUDES="${INCLUDES}com.simplicite.*.${MODULE}.*"
+		EXCLUDES="${INCLUDES}com.simplicite.tests.${MODULE}.*"
+	done
+	JAVA_OPTS="$JAVA_OPTS -javaagent:/usr/local/jacoco/lib/jacocoagent.jar=destfile=${JACOCO_DESTFILE:-$TOMCAT_ROOT/jacoco.exec},includes=${INCLUDES},excludes=${EXCLUDES}"
+fi
 
 SYSPARAMS=$(env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }')
 [ "$SYSPARAMS" != "" ] && SYSPARAMS="${SYSPARAMS}commit;"
