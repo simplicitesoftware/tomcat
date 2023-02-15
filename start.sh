@@ -115,16 +115,27 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
 if [ "$JACOCO_MODULES" != "" ]
 then
-	INCLUDES=""
-	EXCLUDES=""
-	for MODULE in $JACOCO_MODULES
-	do
-		[ "$INCLUDES" != "" ] && INCLUDES="${INCLUDES}:"
-		[ "$EXCLUDES" != "" ] && EXCLUDES="${EXCLUDES}:"
-		INCLUDES="${INCLUDES}com.simplicite.*.${MODULE}.*"
-		EXCLUDES="${INCLUDES}com.simplicite.tests.${MODULE}.*"
-	done
-	JAVA_OPTS="$JAVA_OPTS -javaagent:/usr/local/jacoco/lib/jacocoagent.jar=destfile=${JACOCO_DESTFILE:-$TOMCAT_ROOT/jacoco.exec},includes=${INCLUDES},excludes=${EXCLUDES}"
+	JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
+	if [ -d $JCCHOME ]
+	then
+		JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
+		JCCDESTDIR=`dirname $JCCDESTFILE`
+		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
+		JCCINCLUDES=""
+		JCCEXCLUDES=""
+		for MODULE in $JACOCO_MODULES
+		do
+			[ "$JCCINCLUDES" != "" ] && INCLUDES="${JCCINCLUDES}:"
+			JCCINCLUDES="${JCCINCLUDES}com.simplicite.*.${MODULE}.*"
+			[ "$JCCEXCLUDES" != "" ] && EXCLUDES="${JCCEXCLUDES}:"
+			JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
+		done
+		JCCOPTS="-javaagent:${JCCHOME}/lib/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}"
+		echo "JaCoCo options: $JCCOPTS"
+		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
+	else
+		echo "WARNING: JaCoCo is not present"
+	fi
 fi
 
 SYSPARAMS=$(env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }')
