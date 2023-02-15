@@ -123,11 +123,11 @@ then
 		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
 		JCCINCLUDES=""
 		JCCEXCLUDES=""
-		for MODULE in $JACOCO_MODULES
+		for MODULE in ${JACOCO_MODULES//,/ }
 		do
-			[ "$JCCINCLUDES" != "" ] && INCLUDES="${JCCINCLUDES}:"
+			[ "$JCCINCLUDES" != "" ] && JCCINCLUDES="${JCCINCLUDES}:"
 			JCCINCLUDES="${JCCINCLUDES}com.simplicite.*.${MODULE}.*"
-			[ "$JCCEXCLUDES" != "" ] && EXCLUDES="${JCCEXCLUDES}:"
+			[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
 			JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
 		done
 		JCCOPTS="-javaagent:${JCCHOME}/lib/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}"
