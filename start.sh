@@ -118,6 +118,7 @@ then
 	JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
 	if [ -d $JCCHOME ]
 	then
+		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
 		JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
 		JCCDESTDIR=`dirname $JCCDESTFILE`
 		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
@@ -131,7 +132,7 @@ then
 			[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
 			JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
 		done
-		JCCOPTS="-javaagent:${JCCHOME}/lib/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}"
+		JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}"
 		echo "JaCoCo options: $JCCOPTS"
 		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
 	else
