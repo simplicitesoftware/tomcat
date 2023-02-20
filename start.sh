@@ -124,7 +124,7 @@ then
 		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
 		rm -f $JCCDESTFILE
 		JCCSERVER=""
-		[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-\*},port=${JACOCO_SERVER:-8001}"
+		[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
 		JCCINCLUDES=""
 		JCCEXCLUDES=""
 		for MODULE in ${JACOCO_MODULES//,/ }
