@@ -123,6 +123,8 @@ then
 		JCCDESTDIR=`dirname $JCCDESTFILE`
 		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
 		rm -f $JCCDESTFILE
+		JCCSERVER=""
+		[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-\*},port=${JACOCO_SERVER:-8001}"
 		JCCINCLUDES=""
 		JCCEXCLUDES=""
 		for MODULE in ${JACOCO_MODULES//,/ }
@@ -132,7 +134,7 @@ then
 			[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
 			JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
 		done
-		JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}"
+		JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}${JCCSERVER}"
 		echo "JaCoCo options: $JCCOPTS"
 		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
 	else
