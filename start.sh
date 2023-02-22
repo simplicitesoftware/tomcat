@@ -812,6 +812,21 @@ else
 		[ -w startup.sh ] && sed -i '/^exec /s/" jpda start /" start /' startup.sh
 	fi
 
+	function shutdown {
+		./shutdown.sh
+		if [ -x $TOMCAT_ROOT/shutdown.sh ]
+		then
+			if [ $(id -u) = $TOMCAT_UID ]
+			then
+				cd $TOMCAT_ROOT && exec ./shutdown.sh
+			else
+				exec su $TOMCAT_USER -c "cd $TOMCAT_ROOT && ./shutdown.sh"
+			fi
+		fi
+	}
+
+	trap shutdown SIGTERM
+
 	./startup.sh
 	cd ..
 	
