@@ -185,6 +185,12 @@
                pattern="%h %l %u %t &quot;%r&quot; %s %b"
                maxDays="28"/>
 
+       <!-- Error report valve
+             Avoid displaying too explicit error pages -->
+        <Valve className="org.apache.catalina.valves.ErrorReportValve"
+               showReport="false"
+               showServerInfo="false"/>
+
       </Host>
     </Engine>
   </Service>
