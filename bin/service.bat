@@ -24,9 +24,9 @@ rem install                 Install the service using default settings.
 rem remove                  Remove the service from the system.
 rem
 rem service_name (optional) The name to use for the service. If not specified,
-rem                         Tomcat9 is used as the service name.
+rem                         Tomcat10 is used as the service name.
 rem
-rem --rename     (optional) Rename tomcat9.exe and tomcat9w.exe to match
+rem --rename     (optional) Rename tomcat10.exe and tomcat10w.exe to match
 rem                         the non-default service name.
 rem
 rem username     (optional) The name of the OS user to use to install/remove
@@ -39,7 +39,7 @@ setlocal
 
 set "SELF=%~dp0%service.bat"
 
-set DEFAULT_SERVICE_NAME=Tomcat9
+set DEFAULT_SERVICE_NAME=Tomcat10
 set SERVICE_NAME=%DEFAULT_SERVICE_NAME%
 
 set "CURRENT_DIR=%cd%"
@@ -113,15 +113,9 @@ if not exist "%JRE_HOME%\bin\java.exe" goto noJavaHome
 goto okJavaHome
 :gotJdkHome
 if not exist "%JAVA_HOME%\bin\javac.exe" goto noJavaHome
-rem Java 9 has a different directory structure
-if exist "%JAVA_HOME%\jre\bin\java.exe" goto preJava9Layout
 if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
 if not "%JRE_HOME%" == "" goto okJavaHome
 set "JRE_HOME=%JAVA_HOME%"
-goto okJavaHome
-:preJava9Layout
-if not "%JRE_HOME%" == "" goto okJavaHome
-set "JRE_HOME=%JAVA_HOME%\jre"
 goto okJavaHome
 :noJavaHome
 echo The JAVA_HOME environment variable is not defined correctly
@@ -132,19 +126,6 @@ exit /b 1
 if not "%CATALINA_BASE%" == "" goto gotBase
 set "CATALINA_BASE=%CATALINA_HOME%"
 :gotBase
-
-rem Java 9 no longer supports the java.endorsed.dirs
-rem system property. Only try to use it if
-rem JAVA_ENDORSED_DIRS was explicitly set
-rem or CATALINA_HOME/endorsed exists.
-set ENDORSED_PROP=ignore.endorsed.dirs
-if "%JAVA_ENDORSED_DIRS%" == "" goto noEndorsedVar
-set ENDORSED_PROP=java.endorsed.dirs
-goto doneEndorsed
-:noEndorsedVar
-if not exist "%CATALINA_HOME%\endorsed" goto doneEndorsed
-set ENDORSED_PROP=java.endorsed.dirs
-:doneEndorsed
 
 rem Process the requested command
 if /i %SERVICE_CMD% == install goto doInstall
@@ -209,8 +190,8 @@ if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" (
 )
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 9.0.73 Server - https://tomcat.apache.org/" ^
-    --DisplayName "Apache Tomcat 9.0 %SERVICE_NAME%" ^
+    --Description "Apache Tomcat 10.1.7 Server - https://tomcat.apache.org/" ^
+    --DisplayName "Apache Tomcat 10.1 %SERVICE_NAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
     --StdOutput auto ^
@@ -225,7 +206,7 @@ if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" (
     --StopClass org.apache.catalina.startup.Bootstrap ^
     --StartParams start ^
     --StopParams stop ^
-    --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-D%ENDORSED_PROP%=%CATALINA_HOME%\endorsed;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties;%JvmArgs%" ^
+    --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties;%JvmArgs%" ^
     --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.base/java.io=ALL-UNNAMED#--add-opens=java.base/java.util=ALL-UNNAMED#--add-opens=java.base/java.util.concurrent=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED" ^
     --Startup "%SERVICE_STARTUP_MODE%" ^
     --JvmMs "%JvmMs%" ^
