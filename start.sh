@@ -506,6 +506,15 @@ EOF
 		echo "ERROR: Unknown database vendor ($DB_VENDOR)" >&2
 		exit 8
 	fi
+	if [ -r $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/extraresources.xml ]
+	then
+		if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
+		then
+			sed -i "/extraresources/r /$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/extraresources.xml"  $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml && rm -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/extraresources.xml
+		else
+			echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml is not writeable, unable to setup extra resourcesn"
+		fi
+	fi
 elif [ -w $TOMCAT_ROOT/webapps ]
 then
 	echo -n "Generating default webapp... "
