@@ -102,7 +102,7 @@ then
 	fi
 fi
 export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/git}"
-[ ${TOMCAT_JMX_PORT:-0} -gt 0 ] && JMX="true"
+[ ${TOMCAT_JMX_PORT:-0} -gt 0 -a ${TOMCAT_JMX_RMI_PORT:-0} -gt 0 ] && JMX="true"
 [ "$JMX" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.mbean=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.rmi.port=${TOMCAT_JMX_RMI_PORT:-8556} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
