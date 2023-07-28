@@ -103,7 +103,13 @@ then
 fi
 export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/git}"
 [ ${TOMCAT_JMX_PORT:-0} -gt 0 -a ${TOMCAT_JMX_RMI_PORT:-0} -gt 0 ] && JMX="true"
-[ "$JMX" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.mbean=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.rmi.port=${TOMCAT_JMX_RMI_PORT:-8556} -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+if [ "$JMX" = "true" ]
+then
+	export JAVA_OPTS="$JAVA_OPTS -Dplatform.mbean=true -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=${TOMCAT_JMX_LOCALONLY:-false} -Dcom.sun.management.jmxremote.ssl=${TOMCAT_JMX_SSL:-false} -Dcom.sun.management.jmxremote.authenticate=${TOMCAT_JMX_AUTHENTICATE:-false}"
+	[ ! -z $TOMCAT_JMX_HOST ] && JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.host=$TOMCAT_JMX_HOST"
+	[ ! -z $TOMCAT_JMX_RMI_PORT ] && JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.rmi.port=$TOMCAT_JMX_RMI_PORT"
+	[ ! -z $TOMCAT_JMX_RMI_HOST ] && JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.hostname=$TOMCAT_JMX_RMI_HOST"
+fi
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
@@ -120,7 +126,7 @@ then
 	then
 		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
 		JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
-		JCCDESTDIR=`dirname $JCCDESTFILE`
+		JCCDESTDIR=$(dirname $JCCDESTFILE)
 		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
 		rm -f $JCCDESTFILE
 		JCCSERVER=""
