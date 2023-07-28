@@ -105,9 +105,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dgit.basedir=${GIT_BASEDIR:-$TOMCAT_ROOT/webapps/$
 [ ${TOMCAT_JMX_PORT:-0} -gt 0 -a ${TOMCAT_JMX_RMI_PORT:-0} -gt 0 ] && JMX="true"
 if [ "$JMX" = "true" ]
 then
-	export JAVA_OPTS="$JAVA_OPTS -Dplatform.mbean=true -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-8555} -Dcom.sun.management.jmxremote.local.only=${TOMCAT_JMX_LOCALONLY:-false} -Dcom.sun.management.jmxremote.ssl=${TOMCAT_JMX_SSL:-false} -Dcom.sun.management.jmxremote.authenticate=${TOMCAT_JMX_AUTHENTICATE:-false}"
-	[ ! -z $TOMCAT_JMX_HOST ] && JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.host=$TOMCAT_JMX_HOST"
-	[ ! -z $TOMCAT_JMX_RMI_PORT ] && JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.rmi.port=$TOMCAT_JMX_RMI_PORT"
+	export JAVA_OPTS="$JAVA_OPTS -Dplatform.mbean=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=${TOMCAT_JMX_PORT:-1099} -Dcom.sun.management.jmxremote.rmi.port=${TOMCAT_JMX_RMI_PORT:-1098} -Dcom.sun.management.jmxremote.local.only=${TOMCAT_JMX_LOCALONLY:-false} -Dcom.sun.management.jmxremote.ssl=${TOMCAT_JMX_SSL:-false} -Dcom.sun.management.jmxremote.authenticate=${TOMCAT_JMX_AUTHENTICATE:-false}"
 	[ ! -z $TOMCAT_JMX_RMI_HOST ] && JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.hostname=$TOMCAT_JMX_RMI_HOST"
 fi
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
