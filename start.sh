@@ -181,7 +181,7 @@ then
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
-			exit 2	
+			exit 2
 		fi
 		echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
@@ -266,7 +266,7 @@ then
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
-			exit 2	
+			exit 2
 		fi
 		echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
@@ -344,7 +344,7 @@ then
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
-			exit 2	
+			exit 2
 		fi
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
@@ -434,7 +434,7 @@ EOF
 		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
-			exit 2	
+			exit 2
 		fi
 		echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
@@ -842,7 +842,7 @@ else
 
 	./startup.sh
 	cd ..
-	
+
 	if [ "$1" = "-t" -o "$1" = "--tail" ]
 	then
 		LOG=logs/catalina.out
