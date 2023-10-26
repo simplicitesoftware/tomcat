@@ -309,6 +309,12 @@ then
 			then
 				if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp ]
 				then
+					if [ "$DB_SCHEMA" != "" ]
+					then
+						echo "Forcing schema to $DB_SCHEMA"
+						sed -i "s/SET search_path = public/SET search_path = $DB_SCHEMA/;s/ public\./ $DB_SCHEMA./" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp
+						echo "Done"
+					fi
 					echo "Loading database..."
 					PGPASSWORD=$DB_PASSWORD psql --quiet -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp
 					RET=$?
