@@ -1,3 +1,6 @@
+![Simplicit&eacute; Software](https://platform.simplicite.io/logos/logo250-grey.png)
+* * *
+
 Tomcat for Simplicit&eacute;&reg;
 =================================
 
