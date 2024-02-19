@@ -13,11 +13,15 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 
-DB_DIR=$DB_DIR/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db
+DB_DIR=$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db
 if [ ! -d $DB_DIR ]
 then
 	echo "ERROR: No database directory ($DB_DIR)" >&2
 	exit 2
+elif [ ! -w $DB_DIR ]
+then
+	echo "ERROR: Database directory is not writable ($DB_DIR)" >&2
+	exit 3
 fi
 
 [ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
@@ -61,5 +65,5 @@ then
 	exit $?
 else
 	echo "ERROR: Unknown database vendor ($DB_VENDOR)" >&2
-	exit 3
+	exit 4
 fi
