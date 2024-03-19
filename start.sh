@@ -485,7 +485,7 @@ EOF
 				N=$W
 			fi
 		done
-		sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system" 2>&1
+		sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system" > /dev/null
 		RET=$?
 		if [ $RET -ne 0 ]
 		then
