@@ -216,6 +216,8 @@ then
 					echo "Waiting $T seconds for database ($N)"
 					sleep $T
 				fi
+			else
+				N=$W
 			fi
 		done
 		EXISTS=$(echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME)
@@ -301,6 +303,8 @@ then
 					echo "Waiting $T seconds for database ($N)"
 					sleep $T
 				fi
+			else
+				N=$W
 			fi
 		done
 		EXISTS=$(echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME)
@@ -388,6 +392,8 @@ EOF
 					echo "Waiting $T seconds for database ($N)"
 					sleep $T
 				fi
+			else
+				N=$W
 			fi
 		done
 		sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF > /dev/null 2>&1
@@ -463,7 +469,7 @@ EOF
 		while [ $N -lt $W ]
 		do
 			N=$(expr $N + 1)
-			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "select 1"
+			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "select 1" > /dev/null
 			RET=$?
 			if [ $RET -ne 0 ]
 			then
@@ -475,9 +481,11 @@ EOF
 					echo "Waiting $T seconds for database ($N)"
 					sleep $T
 				fi
+			else
+				N=$W
 			fi
 		done
-		sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system"
+		sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -d $DB_NAME -b -Q "select 1 from m_system" 2>&1
 		RET=$?
 		if [ $RET -ne 0 ]
 		then
