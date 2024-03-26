@@ -201,7 +201,7 @@ if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" (
 )
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 10.1.19 Server - https://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 10.1.20 Server - https://tomcat.apache.org/" ^
     --DisplayName "Apache Tomcat 10.1 %SERVICE_NAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
