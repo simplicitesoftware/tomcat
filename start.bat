@@ -41,7 +41,7 @@ if not defined DB_URL (
 	)
 	if %DB_VENDOR%==oracle (
 		if not defined DB_PORT set DB_PORT=1521
-		set DB_URL="oracle:thin:@%DB_HOST%:%DB_PORT%:%DB_NAME%%DB_OPTS%"
+		set DB_URL="oracle:thin:@//%DB_HOST%:%DB_PORT%/%DB_NAME%%DB_OPTS%"
 	)
 	if %DB_VENDOR%==sqlserver (
 		if not defined DB_PORT set DB_PORT=1433

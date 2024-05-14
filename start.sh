@@ -234,7 +234,7 @@ then
 						echo "Done"
 					fi
 					echo "Loading database..."
-					mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-mysql.dmp
+					mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-mysql.dmp
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
@@ -243,7 +243,7 @@ then
 					fi
 					if [ "$DBDOC" != "" ]
 					then
-						mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME --execute="update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
+						mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME --execute="update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
 					echo "Done"
 				else
@@ -258,7 +258,7 @@ then
 		if [ "$SYSPARAMS" != "" ]
 		then
 			echo "Setting system parameters..."
-			mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME --execute="$(echo $SYSPARAMS)"
+			mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME --execute="$(echo $SYSPARAMS)"
 			echo "Done"
 		fi
 	elif [ $DB_VENDOR = "postgresql" ]
@@ -291,7 +291,7 @@ then
 		while [ $N -lt $W ]
 		do
 			N=$(expr $N + 1)
-			echo "\q" | PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
+			echo "\q" | PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME
 			RET=$?
 			if [ $RET -ne 0 ]
 			then
@@ -307,7 +307,7 @@ then
 				N=$W
 			fi
 		done
-		EXISTS=$(echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME)
+		EXISTS=$(echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME)
 		if [ "$EXISTS" = "" ]
 		then
 			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
@@ -321,7 +321,7 @@ then
 						echo "Done"
 					fi
 					echo "Loading database..."
-					PGPASSWORD=$DB_PASSWORD psql --quiet -t -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp
+					PGPASSWORD=$DB_PASSWORD psql --quiet -t --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME < $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp
 					RET=$?
 					if [ $RET -ne 0 ]
 					then
@@ -330,7 +330,7 @@ then
 					fi
 					if [ "$DBDOC" != "" ]
 					then
-						PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -c "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
+						PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER $DB_NAME -c "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
 					echo "Done"
 				else
@@ -345,7 +345,7 @@ then
 		if [ "$SYSPARAMS" != "" ]
 		then
 			echo "Setting system parameters..."
-			PGPASSWORD=$DB_PASSWORD psql --quiet -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -c "$(echo $SYSPARAMS)"
+			PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME -c "$(echo $SYSPARAMS)"
 			echo "Done"
 		fi
 	elif [ $DB_VENDOR = "oracle" ]
@@ -360,7 +360,7 @@ then
 		echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 		if [ $GENERIC_DB = 0 ]
 		then
-			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='oracle.jdbc.driver.OracleDriver' -Ddb.url='oracle:thin:@$DB_HOST:$DB_PORT:$DB_NAME$DB_OPTS'"
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='$DB_USER' -Ddb.password='$DB_PASSWORD' -Ddb.driver='oracle.jdbc.driver.OracleDriver' -Ddb.url='oracle:thin:@//$DB_HOST:$DB_PORT/$DB_NAME$DB_OPTS'"
 		else
 			JAVA_OPTS="$JAVA_OPTS -Doracle.user=$DB_USER -Doracle.password=$DB_PASSWORD -Doracle.host=$DB_HOST -Doracle.port=$DB_PORT -Doracle.database=$DB_NAME"
 			if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
