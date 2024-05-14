@@ -45,7 +45,7 @@ then
 	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=5432
 	echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
-	PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME
+	PGPASSWORD=$DB_PASSWORD psql --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME
 	exit $?
 elif [ $DB_VENDOR = "oracle" ]
 then
