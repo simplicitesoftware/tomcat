@@ -330,7 +330,7 @@ then
 					fi
 					if [ "$DBDOC" != "" ]
 					then
-						PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER $DB_NAME -c "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
+						PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME -c "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
 					echo "Done"
 				else
