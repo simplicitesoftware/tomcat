@@ -59,7 +59,6 @@ cat << EOF > pom.xml
   <artifactId>tmp</artifactId>
   <version>0.0.0</version>
   <name>Temporary</name>
-  <dependencies>
 EOF
 
 if [ "$MAVEN_REPOSITORY" != "" ]
@@ -67,11 +66,16 @@ then
 	cat << EOF >> pom.xml
   <repositories>
     <repository>
+      <id>CustomMavenRepository</id>
       <url>${MAVEN_REPOSITORY}</url>
     </repository>
   </repositories>
 EOF
 fi
+
+cat << EOF >> pom.xml
+  <dependencies>
+EOF
 
 PROPS=""
 N=0
