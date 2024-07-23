@@ -125,7 +125,7 @@ then
 	if [ -d $JCCHOME ]
 	then
 		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
-		JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
+		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/jacoco/jacoco.exec}
 		JCCDESTDIR=$(dirname $JCCDESTFILE)
 		[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
 		rm -f $JCCDESTFILE
