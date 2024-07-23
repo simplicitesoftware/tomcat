@@ -127,7 +127,7 @@ then
 		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
 		JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
 		JCCDESTDIR=$(dirname $JCCDESTFILE)
-		[ ! -d $DESTDIR ] && mkdir -p $JCCDESTDIR
+		[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
 		rm -f $JCCDESTFILE
 		JCCSERVER=""
 		[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
