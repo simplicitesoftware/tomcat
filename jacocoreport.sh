@@ -20,13 +20,14 @@ fi
 JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
 if [ -d $JCCHOME ]
 then
+	[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
 	JCCDESTFILE=${JACOCO_DESTFILE:-/var/lib/jacoco/jacoco.exec}
 	if [ -f ${JCCDESTFILE} ]
 	then
 		JCCREPORTDIR=${JACOCO_REDPORTDIR:-/var/lib/jacoco/report}
 		rm -fr $JCCREPORTDIR
 		mkdir -p $JCCREPORTDIR
-		java -jar ${JCCHOME}/lib/jacococli.jar \
+		java -jar ${JCCHOME}/jacococli.jar \
 			report ${JCCDESTFILE} \
 			--html ${JCCREPORTDIR} \
 			--sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src \
