@@ -125,11 +125,11 @@ then
 	if [ -d $JCCHOME ]
 	then
 		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
-		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/jacoco.exec}
+		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/webapps/jacoco/jacoco.exec}
 		JCCDESTDIR=$(dirname $JCCDESTFILE)
 		[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
 		rm -f $JCCDESTFILE
-		JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
+		JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco/report}
 		[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
 		JCCSERVER=""
 		[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
@@ -146,7 +146,7 @@ then
 		echo "JaCoCo options: $JCCOPTS"
 		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
 	else
-		echo "WARNING: JaCoCo is not present"
+		echo "Warning: JaCoCo is not present"
 	fi
 fi
 
