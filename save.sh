@@ -30,40 +30,57 @@ fi
 [ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
 echo "Database vendor: $DB_VENDOR"
 
+TOMCAT_PID=$(ps -u $(whoami) | grep -v grep | grep java | awk '{print $1}')
+if [ "$TOMCAT_PID" != "" ]
+then
+	echo "Suspending Tomcat process $TOMCAT_PID"
+	kill -STOP $TOMCAT_PID
+	echo "Done"
+fi
+
 if [ $DB_VENDOR = "mysql" ]
 then
 	echo "HSQLDB database: Embedded"
 	# Nothing to do
-	exit 0
+	RET=0
 elif [ $DB_VENDOR = "mysql" ]
 then
 	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=3306
 	echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	mysqldump --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME > $DB_DIR/simplicite-mysql.dmp
-	exit $?
+	RET=$?
 elif [ $DB_VENDOR = "postgresql" ]
 then
 	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=5432
 	echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	PGPASSWORD=$DB_PASSWORD pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME --no-owner --clean > $DB_DIR/simplicite-postgresql.dmp
-	exit $?
+	RET=$?
 elif [ $DB_VENDOR = "oracle" ]
 then
 	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=1521
 	echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	exp $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME file=$DB_DIR/simplicite-oracle.dmp log=$DB_DIR/simplicite-oracle.log owner=$DB_USER
-	exit $?
+	RET=$?
 elif [ $DB_VENDOR = "mssql" ]
 then
 	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
 	[ "$DB_PORT" = "" ] && DB_PORT=1433
 	echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "backup database $DB_NAME to disk='$DB_DIR/simplicite-mssql.dmp' with no_log"
-	exit $?
+	RET=$?
 else
 	echo "ERROR: Unknown database vendor ($DB_VENDOR)" >&2
-	exit 4
+	RET=4
 fi
+
+if [ "$TOMCAT_PID" != "" ]
+then
+	echo "Resuming Tomcat process $TOMCAT_PID"
+	kill -CONT $TOMCAT_PID
+	echo "Done"
+fi
+
+exit $RET
