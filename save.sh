@@ -20,7 +20,7 @@ echo "Tomcat root: $TOMCAT_ROOT"
 
 export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 
-SAVE_DIR=${1:-TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/save}
+SAVE_DIR=${1:-$TOMCAT_ROOT/save}
 [ ! -d $SAVE_DIR ] && mkdir $SAVE_DIR
 if [ ! -w $SAVE_DIR ]
 then
