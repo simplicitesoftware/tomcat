@@ -38,10 +38,14 @@ then
 	echo "Done"
 fi
 
-if [ $DB_VENDOR = "mysql" ]
+if [ $DB_VENDOR = "hsqldb" ]
 then
 	echo "HSQLDB database: Embedded"
-	# Nothing to do
+	rm -f $DB_DIR/simplicite.tar.gz
+	pushd $DB_DIR/.. > /dev/null
+	tar cfz --exclude='db/simplicite-mysql*' --exclude='db/simplicite-postgresql*' --exclude='db/simplicite-mssql*' --exclude='db/simplicite-oracle*' /tmp/simplicite.tar.gz db dbdoc
+	popd > /dev/null
+	mv /tmp/simplicite.tar.gz $DB_DIR
 	RET=0
 elif [ $DB_VENDOR = "mysql" ]
 then
