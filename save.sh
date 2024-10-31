@@ -54,7 +54,7 @@ then
 	echo "HSQLDB database: Embedded"
 	rm -f $SAVE_DIR/simplicite-hsqldb.$DATE.tar.gz
 	pushd $WEBINF_DIR > /dev/null
-	tar --exclude='db/simplicite-mysql*' --exclude='db/simplicite-postgresql*' --exclude='db/simplicite-mssql*' --exclude='db/simplicite-oracle*' -c -f $SAVE_DIR/simplicite-hsqldb.$DATE.tar.gz $(basename $DB_DIR) $(basename $DBDOC_DIR)
+	tar --exclude='db/simplicite-mysql*' --exclude='db/simplicite-postgresql*' --exclude='db/simplicite-mssql*' --exclude='db/simplicite-oracle*' -c -z -f $SAVE_DIR/simplicite-hsqldb.$DATE.tar.gz $(basename $DB_DIR) $(basename $DBDOC_DIR)
 	popd > /dev/null
 	RET=0
 elif [ $DB_VENDOR = "mysql" ]
