@@ -64,7 +64,7 @@ TOMCAT_HOME="/home/$TOMCAT_USER/tomcat"
 JAVA_OPTS="-server -Dfile.encoding=UTF-8"
 
 # Server
-JAVA_OPTS="$JAVA_OPTS -Dserver.vendor=tomcat -Dserver.version=9"
+JAVA_OPTS="$JAVA_OPTS -Dserver.vendor=tomcat -Dserver.version=10"
 
 # Small
 #JAVA_OPTS="$JAVA_OPTS -Xms256m -Xmx512m"
