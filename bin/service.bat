@@ -24,9 +24,9 @@ rem install                 Install the service using default settings.
 rem remove                  Remove the service from the system.
 rem
 rem service_name (optional) The name to use for the service. If not specified,
-rem                         Tomcat10 is used as the service name.
+rem                         Tomcat11 is used as the service name.
 rem
-rem --rename     (optional) Rename tomcat10.exe and tomcat10w.exe to match
+rem --rename     (optional) Rename tomcat11.exe and tomcat11w.exe to match
 rem                         the non-default service name.
 rem
 rem username     (optional) The name of the OS user to use to install/remove
@@ -39,7 +39,7 @@ setlocal
 
 set "SELF=%~dp0%service.bat"
 
-set DEFAULT_SERVICE_NAME=Tomcat10
+set DEFAULT_SERVICE_NAME=Tomcat11
 set SERVICE_NAME=%DEFAULT_SERVICE_NAME%
 
 set "CURRENT_DIR=%cd%"
@@ -201,8 +201,8 @@ if exist "%CATALINA_HOME%\bin\%DEFAULT_SERVICE_NAME%.exe" (
 )
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 10.1.33 Server - https://tomcat.apache.org/" ^
-    --DisplayName "Apache Tomcat 10.1 %SERVICE_NAME%" ^
+    --Description "Apache Tomcat 11.0.1 Server - https://tomcat.apache.org/" ^
+    --DisplayName "Apache Tomcat 11.0 %SERVICE_NAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
     --StdOutput auto ^
