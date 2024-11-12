@@ -31,7 +31,7 @@ then
 			do
 				MSRC=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src/com/simplicite/$PKG/$MODULE
 				MBIN=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE
-				if [ -d $MSRC -& -d $MBIN ]
+				if [ -d $MSRC -a -d $MBIN ]
 				then
 					echo "Info: Package $PKG of module $MODULE included"
 					SRC="$SRC --sourcefiles $MSRC"
