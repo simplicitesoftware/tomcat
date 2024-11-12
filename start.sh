@@ -140,7 +140,7 @@ then
 			[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
 			JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
 		done
-		JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}${JCCSERVER}"
+		JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},append=${JACOCO_DESTFILE_APPEND:-true},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}${JCCSERVER}"
 		echo "JaCoCo options: $JCCOPTS"
 		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
 	else

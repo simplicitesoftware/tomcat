@@ -20,25 +20,39 @@ then
 	then
 		JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
 		[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
-		rm -fr $JCCREPORTDIR/*
 
 		SRC=""
 		CLS=""
 		for MODULE in ${JACOCO_MODULES//,/ }
 		do
-			# Avoid including tests
+			# Include all packages except tests
 			for PKG in commons objects extobjects workflows dispositions adapters
 			do
-				SRC="$SRC --sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src/com/simplicite/$PKG/$MODULE"
-				CLS="$CLS --classfiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE"
+				MSRC=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src/com/simplicite/$PKG/$MODULE
+				MCLS=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE
+				if [ -d $MSRC -o -d $MCLS ]
+				then
+					echo "Info: Package $PKG of module $MODULE included"
+					SRC="$SRC --sourcefiles $MSRC"
+					CLS="$CLS --classfiles $MCLS"
+				else
+					echo "Info: Package $PKG of module $MODULE ignored"
+				fi
 			done
 		done
+
+		if [ "$SRC" = "" -o "$CLS" = "" ]
+		then
+			echo "Warning: No source or classes folders to generate report"
+			exit 4
+		fi
 
 		java -jar ${JCCHOME}/jacococli.jar \
 			report ${JCCDESTFILE} \
 			--html ${JCCREPORTDIR} \
 			$SRC \
 			$CLS
+		exit $?
 	else
 		echo "Warning: JaCoCo exec file does not exists"
 		exit 3
