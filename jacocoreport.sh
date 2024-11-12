@@ -26,11 +26,19 @@ then
 		CLS=""
 		for MODULE in ${JACOCO_MODULES//,/ }
 		do
-			# Avoid including tests
+			# Include all packages except tests
 			for PKG in commons objects extobjects workflows dispositions adapters
 			do
-				SRC="$SRC --sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src/com/simplicite/$PKG/$MODULE"
-				CLS="$CLS --classfiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE"
+				MSRC=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src/com/simplicite/$PKG/$MODULE
+				MBIN=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE
+				if [ -d $MSRC -& -d $MBIN ]
+				then
+					echo "Info: Package $PKG of module $MODULE included"
+					SRC="$SRC --sourcefiles $MSRC"
+					CLS="$CLS --classfiles $MBIN"
+				else
+					echo "Info: Package $PKG of module $MODULE ignored"
+				fi
 			done
 		done
 
