@@ -20,7 +20,6 @@ then
 	then
 		JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
 		[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
-		#rm -fr $JCCREPORTDIR/*
 
 		SRC=""
 		CLS=""
