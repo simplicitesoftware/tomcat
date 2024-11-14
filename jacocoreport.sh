@@ -21,19 +21,16 @@ then
 		JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
 		[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
 
-		SRC=""
 		CLS=""
 		for MODULE in ${JACOCO_MODULES//,/ }
 		do
-			# Include all packages except tests
+			# Include class files from all present packages except tests
 			for PKG in commons objects extobjects workflows dispositions adapters
 			do
-				MSRC=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src/com/simplicite/$PKG/$MODULE
 				MCLS=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE
-				if [ -d $MSRC -o -d $MCLS ]
+				if [ -d $MCLS ]
 				then
 					echo "Info: Package $PKG of module $MODULE included"
-					SRC="$SRC --sourcefiles $MSRC"
 					CLS="$CLS --classfiles $MCLS"
 				else
 					echo "Info: Package $PKG of module $MODULE ignored"
@@ -41,16 +38,16 @@ then
 			done
 		done
 
-		if [ "$SRC" = "" -o "$CLS" = "" ]
+		if [ "$CLS" = "" ]
 		then
-			echo "Warning: No source or classes folders to generate report"
+			echo "Warning: No classes to generate report"
 			exit 4
 		fi
 
 		java -jar ${JCCHOME}/jacococli.jar \
 			report ${JCCDESTFILE} \
 			--html ${JCCREPORTDIR} \
-			$SRC \
+			--sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src \
 			$CLS
 		exit $?
 	else
