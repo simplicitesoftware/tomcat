@@ -41,7 +41,7 @@ fi
 TOMCAT_WEBAPP=${TOMCAT_WEBAPP:-ROOT}
 echo "Tomcat webapp: $TOMCAT_WEBAPP"
 
-if [ $TOMCAT_WEBAPP != "ROOT" ! -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP -a -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/com/simplicite ]
+if [ $TOMCAT_WEBAPP != "ROOT" -a ! -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP -a -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/com/simplicite ]
 then
 	echo "Setting webapp to $TOMCAT_WEBAPP"
 	mv $TOMCAT_ROOT/webapps/ROOT $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
