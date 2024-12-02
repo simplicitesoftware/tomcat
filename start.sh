@@ -38,8 +38,36 @@ then
 	chmod -R go-rwX $HOME/.ssh
 fi
 
-[ "$TOMCAT_WEBAPP" = "" ] && TOMCAT_WEBAPP=ROOT
+TOMCAT_WEBAPP=${TOMCAT_WEBAPP:-ROOT}
 echo "Tomcat webapp: $TOMCAT_WEBAPP"
+
+if [ $TOMCAT_WEBAPP != "ROOT" ! -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP -a -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/com/simplicite ]
+then
+	echo "Setting webapp to $TOMCAT_WEBAPP"
+	mv $TOMCAT_ROOT/webapps/ROOT $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
+	if [ $? = 0 ]
+	then
+		sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+		[ $? != 0 ] && "WARNING: Unable to change context.xml for webapp $TOMCAT_WEBAPP"
+		if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j.xml ]
+		then
+			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j.xml
+			[ $? != 0 ] && "WARNING: Unable to change log4j.xml for webapp $TOMCAT_WEBAPP"
+		elif [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
+			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+			[ $? != 0 ] && "WARNING: Unable to change log4j2.xml for webapp $TOMCAT_WEBAPP"
+		fi
+		if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
+		then
+			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties
+			[ $? != 0 ] && "WARNING: Unable to change logging.properties for webapp $TOMCAT_WEBAPP"
+		fi
+		echo "Done"
+	else
+		echo "ERROR: Unable to rename webapp ROOT to $TOMCAT_WEBAPP"
+		exit 9
+	fi
+fi
 
 [ ! -d $TOMCAT_ROOT/work ] && mkdir $TOMCAT_ROOT/work
 [ ! -d $TOMCAT_ROOT/temp ] && mkdir $TOMCAT_ROOT/temp
@@ -144,7 +172,7 @@ then
 		echo "JaCoCo options: $JCCOPTS"
 		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
 	else
-		echo "Warning: JaCoCo is not present"
+		echo "WARNING: JaCoCo is not present"
 	fi
 fi
 
