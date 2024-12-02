@@ -47,20 +47,20 @@ then
 	mv $TOMCAT_ROOT/webapps/ROOT $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
 	if [ $? = 0 ]
 	then
-		sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
+		sed -i "s/\/ROOT\//\/$TOMCAT_WEBAPP\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
 		[ $? != 0 ] && "WARNING: Unable to change context.xml for webapp $TOMCAT_WEBAPP"
 		if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j.xml ]
 		then
-			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j.xml
+			sed -i "s/\/ROOT\//\/$TOMCAT_WEBAPP\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j.xml
 			[ $? != 0 ] && "WARNING: Unable to change log4j.xml for webapp $TOMCAT_WEBAPP"
 		elif [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
 		then
-			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
+			sed -i "s/\/ROOT\//\/$TOMCAT_WEBAPP\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
 			[ $? != 0 ] && "WARNING: Unable to change log4j2.xml for webapp $TOMCAT_WEBAPP"
 		fi
 		if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
 		then
-			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties
+			sed -i "s/\/ROOT\//\/$TOMCAT_WEBAPP\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties
 			[ $? != 0 ] && "WARNING: Unable to change logging.properties for webapp $TOMCAT_WEBAPP"
 		fi
 		echo "Done"
