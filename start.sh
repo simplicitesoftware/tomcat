@@ -54,6 +54,7 @@ then
 			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j.xml
 			[ $? != 0 ] && "WARNING: Unable to change log4j.xml for webapp $TOMCAT_WEBAPP"
 		elif [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
+		then
 			sed -i "s/\/ROOT\//\/$ctx\//g" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml
 			[ $? != 0 ] && "WARNING: Unable to change log4j2.xml for webapp $TOMCAT_WEBAPP"
 		fi
