@@ -160,10 +160,14 @@
         <Valve className="org.apache.catalina.authenticator.SingleSignOn" />
         -->
 
+        <!-- Remote IP Valve -->
+        <Valve className="org.apache.catalina.valves.RemoteIpValve" />
+
         <!-- Access log processes all example.
              Documentation at: /docs/config/valve.html
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve"
+               requestAttributesEnabled="true"
                directory="logs"
                prefix="access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b"
