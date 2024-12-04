@@ -723,6 +723,16 @@ then
 	fi
 fi
 
+if [ "$PING_WHITELIST" != "" ]
+then
+	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
+	then
+		sed -i 's/<!-- pingwhitelist --><!-- /<!-- pingwhitelist --></;s/ --><!-- pingwhitelist -->/><!-- pingwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@pingwhitelist@~${PING_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+	else
+		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set ping white list"
+	fi
+fi
 if [ "$HEALTH_WHITELIST" != "" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
@@ -761,7 +771,7 @@ then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
 		sed -i 's/<!-- mavenwhitelist --><!-- /<!-- mavenwhitelist --></;s/ --><!-- mavenwhitelist -->/><!-- mavenwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
-		sed -i "s~@healthwhitelist@~${MAVEN_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@mavenwhitelist@~${MAVEN_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
 	else
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set Maven repository white list"
 	fi
@@ -783,7 +793,7 @@ then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
 		sed -i 's/<!-- uiwhitelist --><!-- /<!-- uiwhitelist --></;s/ --><!-- uiwhitelist -->/><!-- uiwhitelist -->/' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
-		sed -i "s~@apiwhitelist@~${UI_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
+		sed -i "s~@uiwhitelist@~${UI_WHITELIST}~" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml
 	else
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set UI enpoint white list"
 	fi
