@@ -166,7 +166,7 @@ then
 				# Include class files from all present packages except tests
 				for PKG in commons objects extobjects workflows dispositions adapters
 				do
-					MCLS=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE
+					MCLS=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/bin/com/simplicite/$PKG/$MODULE
 					if [ -d $MCLS ]
 					then
 						echo "INFO: Package $PKG of module $MODULE included for JaCoCo report"
@@ -183,7 +183,7 @@ then
 			java -jar ${JCCHOME}/jacococli.jar \
 				report ${JCCDESTFILE} \
 				--html ${JCCREPORTDIR} \
-				--sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src \
+				--sourcefiles ${TOMCAT_ROOT}/webapps/$TOMCAT_WEBAPP/WEB-INF/src \
 				$CLS
 			RES=$?
 			[ $RES -ne 0 ] && echo "WARNING: JaCoCo CLI failed with code: $RES"
@@ -234,7 +234,7 @@ then
 			WEBINF=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
 			DRIVER=$(find $WEBINF -name hsqldb-\*.jar -print)
 			SQLTOOL=$(find $WEBINF -name sqltool-\*.jar -print)
-			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true > /dev/null
+			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true > /dev/null
 			RES=$?
 			[ $RES -eq 0 ] && echo "Done" || echo "Failed"
 		fi
