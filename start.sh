@@ -15,7 +15,7 @@ echo "User: $(whoami)"
 [ "$IP_ADDR" = "" ] && export IP_ADDR=$(hostname -i)
 echo "Hostname: $HOSTNAME ($IP_ADDR)"
 
-JCHOME=""
+JCCHOME=""
 JCCDESTFILE=""
 if [ "$JACOCO_MODULES" != "" ]
 then
@@ -57,11 +57,11 @@ then
 				echo "WARNING: No classes to generate report"
 			fi
 		else
-			echo "WARNING: No JaCoCo exec file to generate report"
+			echo "INFO: No JaCoCo exec file to generate report"
 		fi
 	else
 		echo "WARNING: JaCoCo is not present"
-		JCHOME=""
+		JCCHOME=""
 	fi
 fi
 
@@ -199,7 +199,7 @@ fi
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
 
-if [ "$JACOCO_MODULES" != "" -a "$JCHOME" != "" -a "$JCCDESTFILE" != "" ]
+if [ "$JACOCO_MODULES" != "" -a "$JCCHOME" != "" -a "$JCCDESTFILE" != "" ]
 then
 	JCCDESTDIR=$(dirname $JCCDESTFILE)
 	[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
