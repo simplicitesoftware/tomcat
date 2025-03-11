@@ -148,6 +148,7 @@ fi
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
+
 if [ "$JACOCO_MODULES" != "" ]
 then
 	JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
@@ -155,6 +156,40 @@ then
 	then
 		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
 		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/webapps/jacoco/jacoco.exec}
+		if [ -f $JCCDESTFILE ]
+		then
+			JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
+			[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
+			CLS=""
+			for MODULE in ${JACOCO_MODULES//,/ }
+			do
+				# Include class files from all present packages except tests
+				for PKG in commons objects extobjects workflows dispositions adapters
+				do
+					MCLS=${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/bin/com/simplicite/$PKG/$MODULE
+					if [ -d $MCLS ]
+					then
+						echo "INFO: Package $PKG of module $MODULE included for JaCoCo report"
+						CLS="$CLS --classfiles $MCLS"
+					else
+						echo "INFO: Package $PKG of module $MODULE ignored for JaCoCo report"
+					fi
+				done
+			done
+			if [ "$CLS" = "" ]
+			then
+				echo "WARNING: No classes to generate report"
+			fi
+			java -jar ${JCCHOME}/jacococli.jar \
+				report ${JCCDESTFILE} \
+				--html ${JCCREPORTDIR} \
+				--sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/src \
+				$CLS
+			RES=$?
+			[ $RES -ne 0 ] && echo "WARNING: JaCoCo CLI failed with code: $RES"
+		else
+			echo "WARNING: JaCoCo exec file does not exists"
+		fi
 		JCCDESTDIR=$(dirname $JCCDESTFILE)
 		[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
 		touch $JCCDESTFILE
