@@ -42,13 +42,7 @@ then
 				for PKG in commons objects extobjects workflows dispositions adapters
 				do
 					MCLS=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/bin/com/simplicite/$PKG/$MODULE
-					if [ -d $MCLS ]
-					then
-						echo "INFO: Package $PKG of module $MODULE included for JaCoCo report"
-						CLS="$CLS --classfiles $MCLS"
-					else
-						echo "INFO: Package $PKG of module $MODULE ignored for JaCoCo report"
-					fi
+					[ -d $MCLS ] && CLS="$CLS --classfiles $MCLS"
 				done
 			done
 			if [ "$CLS" != "" ]
@@ -61,10 +55,10 @@ then
 				RES=$?
 				[ $RES -ne 0 ] && echo "WARNING: JaCoCo report CLI failed with code: $RES"
 			else
-				echo "WARNING: No classes to generate report"
+				echo "WARNING: No class files to generate JaCoCo report"
 			fi
 		else
-			echo "INFO: No JaCoCo exec file to generate report"
+			echo "No JaCoCo exec file to generate report"
 		fi
 	else
 		echo "WARNING: JaCoCo is not present"
