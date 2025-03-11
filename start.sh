@@ -30,10 +30,10 @@ then
 	[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
 	if [ -d $JCCHOME ]
 	then
-		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/webapps/jacoco/jacoco.exec}
+		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP}/WEB-INF/dbdoc/content/jacoco/jacoco.exec}
 		if [ -f $JCCDESTFILE ]
 		then
-			JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
+			JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP}/WEB-INF/dbdoc/content/jacoco}
 			[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
 			CLS=""
 			for MODULE in ${JACOCO_MODULES//,/ }
@@ -50,7 +50,7 @@ then
 				java -jar ${JCCHOME}/jacococli.jar \
 					report ${JCCDESTFILE} \
 					--html ${JCCREPORTDIR} \
-					--sourcefiles ${TOMCAT_ROOT}/webapps/$TOMCAT_WEBAPP/WEB-INF/src \
+					--sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP}/WEB-INF/src \
 					$CLS
 				RES=$?
 				[ $RES -ne 0 ] && echo "WARNING: JaCoCo report CLI failed with code: $RES"
