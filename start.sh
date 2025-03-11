@@ -15,6 +15,13 @@ echo "User: $(whoami)"
 [ "$IP_ADDR" = "" ] && export IP_ADDR=$(hostname -i)
 echo "Hostname: $HOSTNAME ($IP_ADDR)"
 
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
+echo "Tomcat root: $TOMCAT_ROOT"
+
+TOMCAT_WEBAPP=${TOMCAT_WEBAPP:-ROOT}
+echo "Tomcat webapp: $TOMCAT_WEBAPP"
+
 JCCHOME=""
 JCCDESTFILE=""
 if [ "$JACOCO_MODULES" != "" ]
@@ -65,10 +72,6 @@ then
 	fi
 fi
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
-TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
-echo "Tomcat root: $TOMCAT_ROOT"
-
 if [ -d $TOMCAT_ROOT/.ssh -o ! -z "$SSH_KNOWN_HOSTS" ]
 then
 	rm -fr $HOME/.ssh
@@ -87,9 +90,6 @@ then
 	fi
 	chmod -R go-rwX $HOME/.ssh
 fi
-
-TOMCAT_WEBAPP=${TOMCAT_WEBAPP:-ROOT}
-echo "Tomcat webapp: $TOMCAT_WEBAPP"
 
 if [ $TOMCAT_WEBAPP != "ROOT" -a ! -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP -a -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/com/simplicite ]
 then
