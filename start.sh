@@ -19,6 +19,53 @@ echo "Hostname: $HOSTNAME ($IP_ADDR)"
 TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
+TOMCAT_WEBAPP=${TOMCAT_WEBAPP:-ROOT}
+echo "Tomcat webapp: $TOMCAT_WEBAPP"
+
+JCCHOME=""
+JCCDESTFILE=""
+if [ "$JACOCO_MODULES" != "" ]
+then
+	JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
+	[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
+	if [ -d $JCCHOME ]
+	then
+		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/webapps/jacoco/jacoco.exec}
+		if [ -f $JCCDESTFILE ]
+		then
+			JCCREPORTDIR=${JACOCO_REPORTDIR:-${TOMCAT_ROOT}/webapps/jacoco}
+			[ ! -d $JCCREPORTDIR ] && mkdir -p $JCCREPORTDIR
+			CLS=""
+			for MODULE in ${JACOCO_MODULES//,/ }
+			do
+				# Include class files from all present packages except tests
+				for PKG in commons objects extobjects workflows dispositions adapters
+				do
+					MCLS=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/bin/com/simplicite/$PKG/$MODULE
+					[ -d $MCLS ] && CLS="$CLS --classfiles $MCLS"
+				done
+			done
+			if [ "$CLS" != "" ]
+			then
+				java -jar ${JCCHOME}/jacococli.jar \
+					report ${JCCDESTFILE} \
+					--html ${JCCREPORTDIR} \
+					--sourcefiles ${TOMCAT_ROOT}/webapps/$TOMCAT_WEBAPP/WEB-INF/src \
+					$CLS
+				RES=$?
+				[ $RES -ne 0 ] && echo "WARNING: JaCoCo report CLI failed with code: $RES"
+			else
+				echo "WARNING: No class files to generate JaCoCo report"
+			fi
+		else
+			echo "No JaCoCo exec file to generate report"
+		fi
+	else
+		echo "WARNING: JaCoCo is not present"
+		JCCHOME=""
+	fi
+fi
+
 if [ -d $TOMCAT_ROOT/.ssh -o ! -z "$SSH_KNOWN_HOSTS" ]
 then
 	rm -fr $HOME/.ssh
@@ -37,9 +84,6 @@ then
 	fi
 	chmod -R go-rwX $HOME/.ssh
 fi
-
-TOMCAT_WEBAPP=${TOMCAT_WEBAPP:-ROOT}
-echo "Tomcat webapp: $TOMCAT_WEBAPP"
 
 if [ $TOMCAT_WEBAPP != "ROOT" -a ! -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP -a -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/com/simplicite ]
 then
@@ -148,33 +192,26 @@ fi
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
-if [ "$JACOCO_MODULES" != "" ]
+
+if [ "$JACOCO_MODULES" != "" -a "$JCCHOME" != "" -a "$JCCDESTFILE" != "" ]
 then
-	JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
-	if [ -d $JCCHOME ]
-	then
-		[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
-		JCCDESTFILE=${JACOCO_DESTFILE:-${TOMCAT_ROOT}/webapps/jacoco/jacoco.exec}
-		JCCDESTDIR=$(dirname $JCCDESTFILE)
-		[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
-		touch $JCCDESTFILE
-		JCCSERVER=""
-		[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
-		JCCINCLUDES=""
-		JCCEXCLUDES=""
-		for MODULE in ${JACOCO_MODULES//,/ }
-		do
-			[ "$JCCINCLUDES" != "" ] && JCCINCLUDES="${JCCINCLUDES}:"
-			JCCINCLUDES="${JCCINCLUDES}com.simplicite.*.${MODULE}.*"
-			[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
-			JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
-		done
-		JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},append=${JACOCO_DESTFILE_APPEND:-true},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}${JCCSERVER}"
-		echo "JaCoCo options: $JCCOPTS"
-		JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
-	else
-		echo "WARNING: JaCoCo is not present"
-	fi
+	JCCDESTDIR=$(dirname $JCCDESTFILE)
+	[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
+	touch $JCCDESTFILE
+	JCCSERVER=""
+	[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
+	JCCINCLUDES=""
+	JCCEXCLUDES=""
+	for MODULE in ${JACOCO_MODULES//,/ }
+	do
+		[ "$JCCINCLUDES" != "" ] && JCCINCLUDES="${JCCINCLUDES}:"
+		JCCINCLUDES="${JCCINCLUDES}com.simplicite.*.${MODULE}.*"
+		[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
+		JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
+	done
+	JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},append=${JACOCO_DESTFILE_APPEND:-true},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}${JCCSERVER}"
+	echo "JaCoCo options: $JCCOPTS"
+	JAVA_OPTS="$JAVA_OPTS $JCCOPTS"
 fi
 
 SYSPARAMS=$(env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }')
@@ -199,7 +236,7 @@ then
 			WEBINF=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
 			DRIVER=$(find $WEBINF -name hsqldb-\*.jar -print)
 			SQLTOOL=$(find $WEBINF -name sqltool-\*.jar -print)
-			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true > /dev/null
+			echo $SYSPARAMS | java $JAVA_OPTS -cp $DRIVER:$SQLTOOL org.hsqldb.cmdline.SqlTool --inlineRc="url=jdbc:hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true,user=sa,password=" --continueOnErr=true > /dev/null
 			RES=$?
 			[ $RES -eq 0 ] && echo "Done" || echo "Failed"
 		fi
