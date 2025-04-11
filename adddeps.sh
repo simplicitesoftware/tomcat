@@ -130,7 +130,7 @@ do
 		echo -e "\e[33m- $FILE already exists, ignored\e[0m"
 	else
 		P=$(echo $FILE | sed -r 's/(.*)-[0-9]+(\..+)*.jar$/\1/')
-		F=$(ls $LIB/$P-*.jar 2> /dev/null | head -1)
+		F=$(ls $LIB/$P-[0-9]*.jar 2> /dev/null | head -1)
 		if [ "$F" != "" ]
 		then
 			if [ $FORCE -eq 0 ]
