@@ -1,27 +1,38 @@
 #!/bin/bash
-
-if [ "$JAVA_HOME" = "" ]
-then
-	echo "JAVA_HOME is not set" >&2
-	exit 1
-fi
-export PATH=$JAVA_HOME/bin:$PATH
-
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
-TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
-echo "Tomcat root: $TOMCAT_ROOT"
-
-if [ "$MAVEN_HOME" = "" ]
-then
-	echo "MAVEN_HOME is not set" >&2
-	exit 1
-fi
+# =========================================================================== #
+#   ___ _            _ _    _ _         ___       __ _                        #
+#  / __(_)_ __  _ __| (_)__(_) |_ ___  / __| ___ / _| |___ __ ____ _ _ _ ___  #
+#  \__ \ | '  \| '_ \ | / _| |  _/ -_) \__ \/ _ \  _|  _\ V  V / _` | '_/ -_) #
+#  |___/_|_|_|_| .__/_|_\__|_|\__\___| |___/\___/_|  \__|\_/\_/\__,_|_| \___| #
+#              |_|                                                            #
+# =========================================================================== #
 
 if [ "$1" = "" -o "$1" = "--help" ]
 then
 	echo "Usage $(basename $0) [--force] <list of groupId:artifactId:version>" >&2
+	exit -1
+fi
+
+[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+if [ ! -d $JAVA_HOME ]
+then
+	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
 	exit 1
 fi
+echo "Java home: $JAVA_HOME"
+export PATH=$JAVA_HOME/bin:$PATH
+
+[ "$MAVEN_HOME" = "" ] && MAVEN_HOME="/usr/local/maven"
+if [ ! -d $MAVEN_HOME ]
+then
+	echo "ERROR: MAVEN_HOME = $MAVEN_HOME is not correctly configured" >&2
+	exit 2
+fi
+echo "Maven home: $MAVEN_HOME"
+
+[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
+echo "Tomcat root: $TOMCAT_ROOT"
 
 FORCE=0
 if [ "$1" = "--force" ]
@@ -39,7 +50,7 @@ LIB="$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lib"
 if [ ! -w $LIB ]
 then
 	echo "Target lib directory ($LIB) does not exists or is not writeable" >&2
-	exit 2
+	exit 3
 fi
 GLB="$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/classes/com/simplicite/globals.properties"
 
@@ -109,7 +120,7 @@ EOF
 if [ $N -eq 0 ]
 then
 	echo -e "\e[31mERROR: No dependency to add: $DEP\e[0m" >&2
-	exit 3
+	exit 4
 fi
 
 echo "Done"
@@ -117,7 +128,7 @@ echo "Done"
 echo "Resolution of dependencies..."
 $MAVEN_HOME/bin/mvn -q -U dependency:copy-dependencies
 RES=$?
-[ $RES -ne 0 ] && exit 4
+[ $RES -ne 0 ] && exit 5
 echo "Done"
 
 TRG="target/dependency"

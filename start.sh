@@ -1,4 +1,18 @@
 #!/bin/bash
+# =========================================================================== #
+#   ___ _            _ _    _ _         ___       __ _                        #
+#  / __(_)_ __  _ __| (_)__(_) |_ ___  / __| ___ / _| |___ __ ____ _ _ _ ___  #
+#  \__ \ | '  \| '_ \ | / _| |  _/ -_) \__ \/ _ \  _|  _\ V  V / _` | '_/ -_) #
+#  |___/_|_|_|_| .__/_|_\__|_|\__\___| |___/\___/_|  \__|\_/\_/\__,_|_| \___| #
+#              |_|                                                            #
+# =========================================================================== #
+
+if [ "$1" = "--help" ]
+then
+	echo "Usage $(basename $0) [<--run|-r>]" >&2
+	exit -1
+fi
+
 
 [ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
@@ -182,6 +196,7 @@ then
 	[ ! -z $TOMCAT_JMX_RMI_HOST ] && JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.hostname=$TOMCAT_JMX_RMI_HOST"
 fi
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
+[ "$LSP" = "true" ] && echo "Starting LSP server in the background" && ./lsp.sh > ./lsp.log &
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
 [ "$WEBSOCKETS" = "true" -o "$WEBSOCKETS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.websocket=$WEBSOCKETS"
@@ -227,9 +242,12 @@ then
 	# Check if generic database configuration is enabled (e.g. in Docker images)
 	grep -q '<!-- database --><Resource' $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml
 	GENERIC_DB=$?
-	if [ $DB_VENDOR = "hsqldb" -a $GENERIC_DB = 0 ]
+	if [ $DB_VENDOR = "hsqldb" ]
 	then
-		JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='sa' -Ddb.password='' -Ddb.driver='org.hsqldb.jdbcDriver' -Ddb.url='hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true'"
+		if [ $GENERIC_DB = 0]
+		then
+			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='sa' -Ddb.password='' -Ddb.driver='org.hsqldb.jdbcDriver' -Ddb.url='hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true'"
+		fi
 		if [ "$SYSPARAMS" != "" ]
 		then
 			echo "Setting system parameters..."

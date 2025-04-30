@@ -1,17 +1,25 @@
 #!/bin/bash
+# =========================================================================== #
+#   ___ _            _ _    _ _         ___       __ _                        #
+#  / __(_)_ __  _ __| (_)__(_) |_ ___  / __| ___ / _| |___ __ ____ _ _ _ ___  #
+#  \__ \ | '  \| '_ \ | / _| |  _/ -_) \__ \/ _ \  _|  _\ V  V / _` | '_/ -_) #
+#  |___/_|_|_|_| .__/_|_\__|_|\__\___| |___/\___/_|  \__|\_/\_/\__,_|_| \___| #
+#              |_|                                                            #
+# =========================================================================== #
 
 if [ "$1" = "--help" ]
 then
 	echo "Usage $(basename $0) [<save dir absolute path>]" >&2
-	exit 1
+	exit -1
 fi
 
-
-if [ "$JAVA_HOME" = "" ]
+[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+if [ ! -d $JAVA_HOME ]
 then
-	echo "ERROR: JAVA_HOME is not set" >&2
+	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
 	exit 1
 fi
+echo "Java home: $JAVA_HOME"
 export PATH=$JAVA_HOME/bin:$PATH
 
 [ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
