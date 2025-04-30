@@ -196,7 +196,7 @@ then
 	[ ! -z $TOMCAT_JMX_RMI_HOST ] && JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.hostname=$TOMCAT_JMX_RMI_HOST"
 fi
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
-[ "$LSP" = "true" ] && echo "Starting LSP server in the background" && ./lsp.sh > $TOMCAT_ROOT/logs/lsp.log &
+[ "$LSP" = "true" ] && echo "Starting LSP server in the background" && ./lsp.sh &
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
 [ "$WEBSOCKETS" = "true" -o "$WEBSOCKETS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.websocket=$WEBSOCKETS"
