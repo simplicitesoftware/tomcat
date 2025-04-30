@@ -30,11 +30,9 @@ LSP_PORT=${1:-3003}
 
 LSP_DIR=$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF/lsp
 echo "LSP dir: $LSP_DIR)"
-if [ -d $LSP_DIR ]
+if [ -d $LSP_DIR -a -f $LSP_DIR/simplicite-lsp.jar ]
 then
 	pushd $LSP_DIR > /dev/null
-	LSP_JAR=$(ls -1 simplicite-lsp-*.jar)
-	echo "LSP jar: $LSP_JAR"
 	java -server -Djava.awt.headless=true -Dfile.encoding=UTF-8 \
 		--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
 		--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
@@ -50,10 +48,10 @@ then
 		-Dlsp.process=false \
 		-Dtomcat.root=$TOMCAT_ROOT \
 		-Dtomcat.webapp=${TOMCAT_WEBAPP:-ROOT} \
-		-jar $LSP_JAR
+		-jar simplicite-lsp.jar
 	popd $LSP_DIR > /dev/null
 else
-	echo "LSP dir is not present, ignoring"
+	echo "LSP is not present, ignoring"
 fi
 
 exit 0
