@@ -49,7 +49,7 @@ then
 		-Dtomcat.root=$TOMCAT_ROOT \
 		-Dtomcat.webapp=${TOMCAT_WEBAPP:-ROOT} \
 		-jar simplicite-lsp.jar > $TOMCAT_ROOT/logs/simplicite-lsp.log
-	popd $LSP_DIR > /dev/null
+	popd > /dev/null
 else
 	echo "LSP is not present, ignoring"
 fi
