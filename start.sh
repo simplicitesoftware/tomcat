@@ -244,7 +244,7 @@ then
 	GENERIC_DB=$?
 	if [ $DB_VENDOR = "hsqldb" ]
 	then
-		if [ $GENERIC_DB = 0]
+		if [ $GENERIC_DB = 0 ]
 		then
 			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='sa' -Ddb.password='' -Ddb.driver='org.hsqldb.jdbcDriver' -Ddb.url='hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true'"
 		fi
