@@ -667,7 +667,6 @@ EOF
 	<JarScanner scanClassPath="false" scanAllDirectories="false" scanAllFiles="false" scanBootstrapClassPath="false" scanManifest="false">
 		<JarScanFilter defaultTldScan="false" defaultPluggabilityScan="false"/>
 	</JarScanner>
-	<Valve className="com.simplicite.tomcat.valves.APISessionValve" debug="true"/>
 </Context>
 EOF
 	cp -f $TOMCAT_ROOT/favicon.ico $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP
