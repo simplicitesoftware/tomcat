@@ -231,7 +231,7 @@ set "JVM9_OPTIONS=%JVM9_OPTIONS%;--add-opens=java.base/java.util.concurrent=ALL-
 set "JVM9_OPTIONS=%JVM9_OPTIONS%;--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED"
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 9.0.108 Server - https://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 9.0.109 Server - https://tomcat.apache.org/" ^
     --DisplayName "Apache Tomcat 9.0 %SERVICE_NAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
