@@ -199,7 +199,6 @@ fi
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
 [ "$WEBSOCKETS" = "true" -o "$WEBSOCKETS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.websocket=$WEBSOCKETS"
-[ "$DEV_MODE" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" || JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=false"
 [ "$COMPILER" = "true" -o "$COMPILER" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.compiler=$COMPILER"
 if [ "$DEV_MODE" = "true" ]
 then
