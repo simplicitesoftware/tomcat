@@ -13,7 +13,6 @@ then
 	exit -1
 fi
 
-
 [ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
 then
@@ -202,6 +201,22 @@ fi
 [ "$WEBSOCKETS" = "true" -o "$WEBSOCKETS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.websocket=$WEBSOCKETS"
 [ "$DEV_MODE" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED" || JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=false"
 [ "$COMPILER" = "true" -o "$COMPILER" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.compiler=$COMPILER"
+if [ "$DEV_MODE" = "true" ]
+then
+	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true \
+ --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED \
+ --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
+ --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
+else
+	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=false"
+fi
 [ "$GOD_MODE" = "true" -o "$GOD_MODE" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.godmode=$GOD_MODE"
 [ "$TOMCAT_LOG_ARGS" = "true" -o "$TOMCAT_LOG_ARGS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logargs=$TOMCAT_LOG_ARGS"
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
