@@ -59,6 +59,12 @@ if not defined DB_USER set DB_USER=simplicite
 if not defined DB_PASSWORD set DB_PASSWORD=simplicite
 set JAVA_OPTS=%JAVA_OPTS% -Ddb.vendor=%DB_VENDOR% -Ddb.user=%DB_USER% -Ddb.password=%DB_PASSWORD% -Ddb.driver=%DB_DRIVER% -Ddb.url=%DB_URL%
 
+if %DEV_MODE%==true (
+	set JAVA_OPTS=%JAVA_OPTS% -Dserver.devmode=true --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+) else (
+	set JAVA_OPTS=%JAVA_OPTS% -Dserver.devmode=false
+)
+
 if not exist %TOMCAT_ROOT%\work ( mkdir %TOMCAT_ROOT%\work )
 if not exist %TOMCAT_ROOT%\temp ( mkdir %TOMCAT_ROOT%\temp )
 if not exist %TOMCAT_ROOT%\logs ( mkdir %TOMCAT_ROOT%\logs )
