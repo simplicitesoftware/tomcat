@@ -9,7 +9,7 @@ rem # ==========================================================================
 
 chcp 65001
 
-if not defined JAVA_HOME ( set JAVA_HOME=C:\Program Files\Java\jdk-17 )
+if not defined JAVA_HOME ( set JAVA_HOME=C:\Program Files\Java\jdk-21 )
 set PATH=%JAVA_HOME%\bin;%PATH%
 
 set TOMCAT_ROOT=%CD%
@@ -65,9 +65,9 @@ if %DEV_MODE%==true (
 	set JAVA_OPTS=%JAVA_OPTS% -Dserver.devmode=false
 )
 
-if not exist %TOMCAT_ROOT%\work ( mkdir %TOMCAT_ROOT%\work )
-if not exist %TOMCAT_ROOT%\temp ( mkdir %TOMCAT_ROOT%\temp )
-if not exist %TOMCAT_ROOT%\logs ( mkdir %TOMCAT_ROOT%\logs )
+if not exist %TOMCAT_ROOT%\work mkdir %TOMCAT_ROOT%\work
+if not exist %TOMCAT_ROOT%\temp mkdir %TOMCAT_ROOT%\temp
+if not exist %TOMCAT_ROOT%\logs mkdir %TOMCAT_ROOT%\logs
 
 cd %TOMCAT_ROOT%\bin
 call .\catalina.bat run
