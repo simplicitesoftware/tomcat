@@ -195,7 +195,6 @@ then
 	[ ! -z $TOMCAT_JMX_RMI_HOST ] && JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.hostname=$TOMCAT_JMX_RMI_HOST"
 fi
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
-[ "$LSP" = "true" ] && echo "Starting LSP server in the background" && ./lsp.sh &
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
 [ "$WEBSOCKETS" = "true" -o "$WEBSOCKETS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.websocket=$WEBSOCKETS"
@@ -203,16 +202,17 @@ fi
 if [ "$DEV_MODE" = "true" ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true \
- --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED \
- --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
- --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
+-Dlsp.home=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/lsp \
+--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
+--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
 else
 	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=false"
 fi
