@@ -203,6 +203,7 @@ fi
 if [ "$DEV_MODE" = "true" ]
 then
 	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true \
+-Dlsp.home=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/lsp \
  --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
  --add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
  --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
