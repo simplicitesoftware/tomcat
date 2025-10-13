@@ -220,6 +220,7 @@ fi
 [ "$TOMCAT_LOG_ARGS" = "true" -o "$TOMCAT_LOG_ARGS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logargs=$TOMCAT_LOG_ARGS"
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
+[ "$TOMCAT_SAME_SITE_COOKIES" = "unset" -o "$TOMCAT_SAME_SITE_COOKIES" = "ulaxnset" -o "$TOMCAT_SAME_SITE_COOKIES" = "strict" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.samesitecookies=$TOMCAT_SAME_SITE_COOKIES"
 [ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
 
 if [ "$JACOCO_MODULES" != "" -a "$JCCHOME" != "" -a "$JCCDESTFILE" != "" ]
