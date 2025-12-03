@@ -13,7 +13,7 @@ then
 	exit -1
 fi
 
-[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+[ -z "$JAVA_HOME" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
 then
 	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
@@ -24,11 +24,11 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 echo "User: $(whoami)"
 
-[ "$HOSTNAME" = "" ] && export HOSTNAME=$(hostname)
-[ "$IP_ADDR" = "" ] && export IP_ADDR=$(hostname -i)
+[ -z "$HOSTNAME" ] && export HOSTNAME=$(hostname)
+[ -z "$IP_ADDR" ] && export IP_ADDR=$(hostname -i)
 echo "Hostname: $HOSTNAME ($IP_ADDR)"
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+[ -z "$TOMCAT_ROOT" ] && TOMCAT_ROOT=$(dirname $0)
 TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
@@ -37,7 +37,7 @@ echo "Tomcat webapp: $TOMCAT_WEBAPP"
 
 JCCHOME=""
 JCCDESTFILE=""
-if [ "$JACOCO_MODULES" != "" ]
+if [ ! -z "$JACOCO_MODULES" ]
 then
 	JCCHOME=${JACOCO_HOME:-/usr/local/jacoco}
 	[ -d $JCCHOME/lib ] && JCCHOME=$JCCHOME/lib
@@ -58,7 +58,7 @@ then
 					[ -d $MCLS ] && CLS="$CLS --classfiles $MCLS"
 				done
 			done
-			if [ "$CLS" != "" ]
+			if [ ! -z "$CLS" ]
 			then
 				java -jar ${JCCHOME}/jacococli.jar \
 					report ${JCCDESTFILE} \
@@ -79,24 +79,33 @@ then
 	fi
 fi
 
-if [ -d $TOMCAT_ROOT/.ssh -o ! -z "$SSH_KNOWN_HOSTS" ]
+# Mounted .ssh dir
+if [ -d $TOMCAT_ROOT/.ssh ]
 then
 	rm -fr $HOME/.ssh
 	mkdir $HOME/.ssh
 	[ -d $TOMCAT_ROOT/.ssh ] && cp -r $TOMCAT_ROOT/.ssh/* $HOME/.ssh
 	# Convert OpenSSH key if needed
 	[ -f $HOME/.ssh/id_rsa ] && grep -q 'BEGIN OPENSSH PRIVATE KEY' $HOME/.ssh/id_rsa && ssh-keygen -p -N "" -m pem -f $HOME/.ssh/id_rsa
-	if [ ! -z "$SSH_KNOWN_HOSTS" ]
-	then
-		touch $HOME/.ssh/known_hosts
-		for HOST in $SSH_KNOWN_HOSTS
-		do
-			H=$(grep "^$HOST " $HOME/.ssh/known_hosts)
-			[ "$H" = "" ] && ssh-keyscan $HOST >> $HOME/.ssh/known_hosts
-		done
-	fi
-	chmod -R go-rwX $HOME/.ssh
 fi
+
+if [ ! -z "$SSH_PRIV_KEY" ]
+then
+	[ ! -d $HOME/.ssh ] && mkdir $HOME/.ssh
+	echo $SSH_PRIV_KEY > $HOME/.ssh/id_${SSH_PRIV_KEY_TYPE:-rsa}
+fi
+
+if [ ! -z "$SSH_KNOWN_HOSTS" ]
+then
+	[ ! -d $HOME/.ssh ] && mkdir $HOME/.ssh
+	touch $HOME/.ssh/known_hosts
+	for HOST in $SSH_KNOWN_HOSTS
+	do
+		[ -z "$(grep "^$HOST " $HOME/.ssh/known_hosts)" ] && ssh-keyscan $HOST >> $HOME/.ssh/known_hosts
+	done
+fi
+
+[ -d $HOME/.ssh ] && chmod -R go-rwX $HOME/.ssh
 
 if [ $TOMCAT_WEBAPP != "ROOT" -a ! -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP -a -d $TOMCAT_ROOT/webapps/ROOT/WEB-INF/classes/com/simplicite ]
 then
@@ -201,6 +210,11 @@ fi
 [ "$COMPILER" = "true" -o "$COMPILER" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dserver.compiler=$COMPILER"
 if [ "$DEV_MODE" = "true" ]
 then
+	echo ""
+	echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+	echo "ZZZ The platform is configured for development mode, this is not suitable for production ZZZ"
+	echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+	echo ""
 	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true \
 -Dlsp.home=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/lsp \
 --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
@@ -222,22 +236,22 @@ fi
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$TOMCAT_SAME_SITE_COOKIES" = "unset" -o "$TOMCAT_SAME_SITE_COOKIES" = "lax" -o "$TOMCAT_SAME_SITE_COOKIES" = "strict" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.samesitecookies=$TOMCAT_SAME_SITE_COOKIES"
 [ "$TOMCAT_SECURE_COOKIES" = "true" -o "$TOMCAT_SAME_SITE_COOKIES" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.securecookies=$TOMCAT_SECURE_COOKIES"
-[ "$SERVER_URL" != "" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
+[ ! -z "$SERVER_URL" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
 
-if [ "$JACOCO_MODULES" != "" -a "$JCCHOME" != "" -a "$JCCDESTFILE" != "" ]
+if [ ! -z "$JACOCO_MODULES" -a ! -z "$JCCHOME" -a ! -z "$JCCDESTFILE" ]
 then
 	JCCDESTDIR=$(dirname $JCCDESTFILE)
 	[ ! -d $JCCDESTDIR ] && mkdir -p $JCCDESTDIR
 	touch $JCCDESTFILE
 	JCCSERVER=""
-	[ "$JACOCO_SERVER" = "true" -o "$JACOCO_ADDRESS" != "" -o "$JACOCO_PORT" != "" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
+	[ "$JACOCO_SERVER" = "true" -o ! -z "$JACOCO_ADDRESS" -o ! -z "$JACOCO_PORT" ] && JCCSERVER=",output=tcpserver,address=${JACOCO_ADDRESS:-*},port=${JACOCO_PORT:-8001}"
 	JCCINCLUDES=""
 	JCCEXCLUDES=""
 	for MODULE in ${JACOCO_MODULES//,/ }
 	do
-		[ "$JCCINCLUDES" != "" ] && JCCINCLUDES="${JCCINCLUDES}:"
+		[ ! -z "$JCCINCLUDES" ] && JCCINCLUDES="${JCCINCLUDES}:"
 		JCCINCLUDES="${JCCINCLUDES}com.simplicite.*.${MODULE}.*"
-		[ "$JCCEXCLUDES" != "" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
+		[ ! -z "$JCCEXCLUDES" ] && JCCEXCLUDES="${JCCEXCLUDES}:"
 		JCCEXCLUDES="${JCCEXCLUDES}com.simplicite.tests.${MODULE}.*"
 	done
 	JCCOPTS="-javaagent:${JCCHOME}/jacocoagent.jar=destfile=${JCCDESTFILE},append=${JACOCO_DESTFILE_APPEND:-true},includes=${JCCINCLUDES},excludes=${JCCEXCLUDES}${JCCSERVER}"
@@ -246,11 +260,11 @@ then
 fi
 
 SYSPARAMS=$(env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }')
-[ "$SYSPARAMS" != "" ] && SYSPARAMS="${SYSPARAMS}commit;"
+[ ! -z "$SYSPARAMS" ] && SYSPARAMS="${SYSPARAMS}commit;"
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 then
-	[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
+	[ -z "$DB_VENDOR" ] && DB_VENDOR=hsqldb
 	[ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 	[ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
 	[ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
@@ -264,7 +278,7 @@ then
 		then
 			JAVA_OPTS="$JAVA_OPTS -Ddb.vendor='$DB_VENDOR' -Ddb.user='sa' -Ddb.password='' -Ddb.driver='org.hsqldb.jdbcDriver' -Ddb.url='hsqldb:file:$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite;shutdown=true;sql.ignore_case=true'"
 		fi
-		if [ "$SYSPARAMS" != "" ]
+		if [ ! -z "$SYSPARAMS" ]
 		then
 			echo "Setting system parameters..."
 			WEBINF=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF
@@ -276,11 +290,11 @@ then
 		fi
 	elif [ $DB_VENDOR = "mysql" ]
 	then
-		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
-		[ "$DB_PORT" = "" ] && DB_PORT=3306
-		[ "$DB_SSL" = "" ] && DB_SSL=false
-		[ "$DB_MYISAM" = "" ] && DB_MYISAM=false
-		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
+		[ -z "$DB_HOST" ] && DB_HOST=127.0.0.1
+		[ -z "$DB_PORT" ] && DB_PORT=3306
+		[ -z "$DB_SSL" ] && DB_SSL=false
+		[ -z "$DB_MYISAM" ] && DB_MYISAM=false
+		if [ -z "$DB_NAME" -o -z "$DB_USER" -o -z "$DB_PASSWORD" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2
@@ -322,7 +336,7 @@ then
 			fi
 		done
 		EXISTS=$(echo "show tables like 'm_system'" | mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME)
-		if [ "$EXISTS" = "" ]
+		if [ -z "$EXISTS" ]
 		then
 			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
 			then
@@ -342,7 +356,7 @@ then
 						echo "ERROR: Load database error" >&2
 						exit 7
 					fi
-					if [ "$DBDOC" != "" ]
+					if [ ! -z "$DBDOC" ]
 					then
 						mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME --execute="update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
@@ -356,7 +370,7 @@ then
 				exit 5
 			fi
 		fi
-		if [ "$SYSPARAMS" != "" ]
+		if [ ! -z "$SYSPARAMS" ]
 		then
 			echo "Setting system parameters..."
 			mysql --silent --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD --database=$DB_NAME --execute="$(echo $SYSPARAMS)"
@@ -364,10 +378,10 @@ then
 		fi
 	elif [ $DB_VENDOR = "postgresql" ]
 	then
-		[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
-		[ "$DB_PORT" = "" ] && DB_PORT=5432
-		[ "$DB_SSL" = "" ] && DB_SSL=false
-		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
+		[ -z "$DB_HOST" ] && DB_HOST=127.0.0.1
+		[ -z "$DB_PORT" ] && DB_PORT=5432
+		[ -z "$DB_SSL" ] && DB_SSL=false
+		if [ -z "$DB_NAME" -o -z "$DB_USER" -o -z "$DB_PASSWORD" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2
@@ -409,13 +423,13 @@ then
 			fi
 		done
 		EXISTS=$(echo "select tablename from pg_catalog.pg_tables where tablename = 'm_system'" | PGPASSWORD=$DB_PASSWORD psql -t --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME)
-		if [ "$EXISTS" = "" ]
+		if [ -z "$EXISTS" ]
 		then
 			if [ "$DB_SETUP" = "true" -o "$DB_SETUP" = "yes" ]
 			then
 				if [ -f $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp ]
 				then
-					if [ "$DB_SCHEMA" != "" ]
+					if [ ! -z "$DB_SCHEMA" ]
 					then
 						echo "Forcing schema to $DB_SCHEMA"
 						sed -i "s/SET search_path = public/SET search_path = $DB_SCHEMA/;s/ public\./ $DB_SCHEMA./" $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/db/simplicite-postgresql.dmp
@@ -429,7 +443,7 @@ then
 						echo "ERROR: Load database error" >&2
 						exit 7
 					fi
-					if [ "$DBDOC" != "" ]
+					if [ ! -z "$DBDOC" ]
 					then
 						PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME -c "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
@@ -443,7 +457,7 @@ then
 				exit 5
 			fi
 		fi
-		if [ "$SYSPARAMS" != "" ]
+		if [ ! -z "$SYSPARAMS" ]
 		then
 			echo "Setting system parameters..."
 			PGPASSWORD=$DB_PASSWORD psql --quiet --host=$DB_HOST --port=$DB_PORT --username=$DB_USER --dbname=$DB_NAME -c "$(echo $SYSPARAMS)"
@@ -451,9 +465,9 @@ then
 		fi
 	elif [ $DB_VENDOR = "oracle" ]
 	then
-		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
-		[ "$DB_PORT" = "" ] && DB_PORT=1521
-		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
+		[ -z "$DB_HOST" ] && DB_PORT=127.0.0.1
+		[ -z "$DB_PORT" ] && DB_PORT=1521
+		if [ -z "$DB_NAME" -o -z "$DB_USER" -o -z "$DB_PASSWORD" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2
@@ -516,7 +530,7 @@ EOF
 						echo "ERROR: Load database error" >&2
 						exit 7
 					fi
-					if [ "$DBDOC" != "" ]
+					if [ ! -z "$DBDOC" ]
 					then
 						sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME << EOF > /dev/null 2>&1
 whenever sqlerror exit 1;
@@ -534,7 +548,7 @@ EOF
 				exit 5
 			fi
 		fi
-		if [ "$SYSPARAMS" != "" ]
+		if [ ! -z "$SYSPARAMS" ]
 		then
 			echo "Setting system parameters..."
 			echo $SYSPARAMS | sqlplus -S $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME
@@ -542,10 +556,10 @@ EOF
 		fi
 	elif [ $DB_VENDOR = "mssql" ]
 	then
-		[ "$DB_HOST" = "" ] && DB_PORT=127.0.0.1
-		[ "$DB_PORT" = "" ] && DB_PORT=1433
-		[ "$DB_SSL" = "" ] && DB_SSL=false
-		if [ "$DB_NAME" = "" -o "$DB_USER" = "" -o "$DB_PASSWORD" = "" ]
+		[ -z "$DB_HOST" ] && DB_PORT=127.0.0.1
+		[ -z "$DB_PORT" ] && DB_PORT=1433
+		[ -z "$DB_SSL" ] && DB_SSL=false
+		if [ -z "$DB_NAME" -o -z "$DB_USER" -o -z "$DB_PASSWORD" ]
 		then
 			echo "ERROR: Missing database name, user and/or password" >&2
 			exit 2
@@ -602,7 +616,7 @@ EOF
 						echo "ERROR: Load database error" >&2
 						exit 7
 					fi
-					if [ "$DBDOC" != "" ]
+					if [ ! -z "$DBDOC" ]
 					then
 						sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "update m_system set sys_value='$DBDOC' where sys_code='DOC_DIR'"
 					fi
@@ -616,7 +630,7 @@ EOF
 				exit 5
 			fi
 		fi
-		if [ "$SYSPARAMS" != "" ]
+		if [ ! -z "$SYSPARAMS" ]
 		then
 			echo "Setting system parameters..."
 			sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "$(echo $SYSPARAMS)"
@@ -736,7 +750,7 @@ EOF
 	echo "Done"
 fi
 
-if [ "$LOG4J_ROOT_LEVEL" != "" ]
+if [ ! -z "$LOG4J_ROOT_LEVEL" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml ]
 	then
@@ -773,7 +787,7 @@ then
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/log4j2.xml is not writeable, unable to enable/disable file appender"
 	fi
 fi
-if [ "$LOGGING_CONSOLE_LEVEL" != "" ]
+if [ ! -z "$LOGGING_CONSOLE_LEVEL" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
 	then
@@ -782,7 +796,7 @@ then
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties is not writeable, unable to set console log level"
 	fi
 fi
-if [ "$LOGGING_FILE_LEVEL" != "" ]
+if [ ! -z "$LOGGING_FILE_LEVEL" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/classes/logging.properties ]
 	then
@@ -792,7 +806,7 @@ then
 	fi
 fi
 
-if [ "$PING_WHITELIST" != "" ]
+if [ ! -z "$PING_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -802,7 +816,7 @@ then
 		echo "WARNING: $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml is not writeable, unable to set ping white list"
 	fi
 fi
-if [ "$HEALTH_WHITELIST" != "" ]
+if [ ! -z "$HEALTH_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -813,7 +827,7 @@ then
 	fi
 fi
 
-if [ "$IO_WHITELIST" != "" ]
+if [ ! -z "$IO_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -824,7 +838,7 @@ then
 	fi
 fi
 
-if [ "$GIT_WHITELIST" != "" ]
+if [ ! -z "$GIT_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -835,7 +849,7 @@ then
 	fi
 fi
 
-if [ "$MAVEN_WHITELIST" != "" ]
+if [ ! -z "$MAVEN_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -846,7 +860,7 @@ then
 	fi
 fi
 
-if [ "$API_WHITELIST" != "" ]
+if [ ! -z "$API_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -857,7 +871,7 @@ then
 	fi
 fi
 
-if [ "$UI_WHITELIST" != "" ]
+if [ ! -z "$UI_WHITELIST" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/web.xml ]
 	then
@@ -879,7 +893,7 @@ then
 	fi
 fi
 
-if [ "$API_EXTRA_PATTERNS" != "" ]
+if [ ! -z "$API_EXTRA_PATTERNS" ]
 then
 	if [ -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
 	then
