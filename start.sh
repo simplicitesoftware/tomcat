@@ -92,7 +92,7 @@ fi
 if [ ! -z "$SSH_PRIV_KEY" ]
 then
 	[ ! -d $HOME/.ssh ] && mkdir $HOME/.ssh
-	printf "$SSH_PRIV_KEY" > $HOME/.ssh/id_${SSH_PRIV_KEY_TYPE:-rsa}
+	printf "%s" "$SSH_PRIV_KEY" > $HOME/.ssh/id_${SSH_PRIV_KEY_TYPE:-rsa}
 fi
 
 if [ ! -z "$SSH_KNOWN_HOSTS" ]
