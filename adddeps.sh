@@ -7,13 +7,13 @@
 #              |_|                                                            #
 # =========================================================================== #
 
-if [ "$1" = "" -o "$1" = "--help" ]
+if [ -z "$1" -o "$1" = "--help" ]
 then
 	echo "Usage $(basename $0) [--force] <list of groupId:artifactId:version>" >&2
 	exit -1
 fi
 
-[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+[ -z "$JAVA_HOME" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
 then
 	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
@@ -22,7 +22,7 @@ fi
 echo "Java home: $JAVA_HOME"
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$MAVEN_HOME" = "" ] && MAVEN_HOME="/usr/local/maven"
+[ -z "$MAVEN_HOME" ] && MAVEN_HOME="/usr/local/maven"
 if [ ! -d $MAVEN_HOME ]
 then
 	echo "ERROR: MAVEN_HOME = $MAVEN_HOME is not correctly configured" >&2
@@ -30,7 +30,7 @@ then
 fi
 echo "Maven home: $MAVEN_HOME"
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+[ -z "$TOMCAT_ROOT" ] && TOMCAT_ROOT=$(dirname $0)
 TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
@@ -72,7 +72,7 @@ cat << EOF > pom.xml
   <name>Temporary</name>
 EOF
 
-if [ "$MAVEN_REPOSITORY" != "" ]
+if [ ! -z "$MAVEN_REPOSITORY" ]
 then
 	cat << EOF >> pom.xml
   <repositories>
@@ -142,7 +142,7 @@ do
 	else
 		P=$(echo $FILE | sed -r 's/(.*)-[0-9]+(\..+)*.jar$/\1/')
 		F=$(ls $LIB/$P-[0-9]*.jar 2> /dev/null | head -1)
-		if [ "$F" != "" ]
+		if [ ! -z "$F" ]
 		then
 			if [ $FORCE -eq 0 ]
 			then

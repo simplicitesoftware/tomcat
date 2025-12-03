@@ -13,7 +13,7 @@ then
 	exit -1
 fi
 
-[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+[ -z "$JAVA_HOME" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
 then
 	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
@@ -22,7 +22,7 @@ fi
 echo "Java home: $JAVA_HOME"
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+[ -z "$TOMCAT_ROOT" ] && TOMCAT_ROOT=$(dirname $0)
 TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
@@ -40,14 +40,14 @@ WEBINF_DIR=$TOMCAT_ROOT/webapps/${TOMCAT_WEBAPP:-ROOT}/WEB-INF
 DB_DIR=$WEBINF_DIR/db
 DBDOC_DIR=$WEBINF_DIR/dbdoc
 
-[ "$DB_VENDOR" = "" ] && DB_VENDOR=hsqldb
+[ -z "$DB_VENDOR" ] && DB_VENDOR=hsqldb
 [ "$DB_VENDOR" = "mariadb" ] && DB_VENDOR=mysql
 [ "$DB_VENDOR" = "pgsql" -o "$DB_VENDOR" = "postgres" ] && DB_VENDOR=postgresql
 [ "$DB_VENDOR" = "sqlserver" ] && DB_VENDOR=mssql
 echo "Database vendor: $DB_VENDOR"
 
 TOMCAT_PID=$(ps -u $(whoami) | grep -v grep | grep java | awk '{print $1}')
-if [ "$TOMCAT_PID" != "" ]
+if [ ! -z "$TOMCAT_PID" ]
 then
 	echo "Suspending Tomcat process $TOMCAT_PID"
 	kill -STOP $TOMCAT_PID
@@ -67,32 +67,32 @@ then
 	RET=0
 elif [ $DB_VENDOR = "mysql" ]
 then
-	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
-	[ "$DB_PORT" = "" ] && DB_PORT=3306
+	[ -z "$DB_HOST" ] && DB_HOST=127.0.0.1
+	[ -z "$DB_PORT" ] && DB_PORT=3306
 	echo "MySQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	DMP=$SAVE_DIR/simplicite-mysql.$DATE.dmp
 	mysqldump --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASSWORD $DB_NAME > $DMP
 	RET=$?
 elif [ $DB_VENDOR = "postgresql" ]
 then
-	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
-	[ "$DB_PORT" = "" ] && DB_PORT=5432
+	[ -z "$DB_HOST" ] && DB_HOST=127.0.0.1
+	[ -z "$DB_PORT" ] && DB_PORT=5432
 	echo "PostgreSQL database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	DMP=$SAVE_DIR/simplicite-postgresql.$DATE.dmp
 	PGPASSWORD=$DB_PASSWORD pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME --no-owner --clean > $DMP
 	RET=$?
 elif [ $DB_VENDOR = "oracle" ]
 then
-	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
-	[ "$DB_PORT" = "" ] && DB_PORT=1521
+	[ -z "$DB_HOST" ] && DB_HOST=127.0.0.1
+	[ -z "$DB_PORT" ] && DB_PORT=1521
 	echo "Oracle database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	DMP=$SAVE_DIR/simplicite-oracle.dmp
 	exp $DB_USER/$DB_PASSWORD@//$DB_HOST:$DB_PORT/$DB_NAME file=$DMP log=$SAVE_DIR/simplicite-oracle.log owner=$DB_USER
 	RET=$?
 elif [ $DB_VENDOR = "mssql" ]
 then
-	[ "$DB_HOST" = "" ] && DB_HOST=127.0.0.1
-	[ "$DB_PORT" = "" ] && DB_PORT=1433
+	[ -z "$DB_HOST" ] && DB_HOST=127.0.0.1
+	[ -z "$DB_PORT" ] && DB_PORT=1433
 	echo "SQLServer database: $DB_HOST / $DB_PORT / $DB_NAME / $DB_USER"
 	DMP=$SAVE_DIR/simplicite-mssql.dmp
 	sqlcmd -S $DB_HOST,$DB_PORT -U $DB_USER -P $DB_PASSWORD -b -Q "backup database $DB_NAME to disk='$DMP' with no_log"
@@ -102,14 +102,14 @@ else
 	RET=4
 fi
 
-if [ "$TOMCAT_PID" != "" ]
+if [ ! -z "$TOMCAT_PID" ]
 then
 	echo "Resuming Tomcat process $TOMCAT_PID"
 	kill -CONT $TOMCAT_PID
 	echo "Done"
 fi
 
-if [ "$DMP" != "" ]
+if [ ! -z "$DMP" ]
 then
 	echo "GZipping dump file"
 	gzip $DMP

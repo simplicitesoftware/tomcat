@@ -13,7 +13,7 @@ then
 	exit -1
 fi
 
-[ "$JAVA_HOME" = "" ] && JAVA_HOME="/usr/lib/jvm/java"
+[ -z "$JAVA_HOME" ] && JAVA_HOME="/usr/lib/jvm/java"
 if [ ! -d $JAVA_HOME ]
 then
 	echo "JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
@@ -21,7 +21,7 @@ then
 fi
 export PATH=$JAVA_HOME/bin:$PATH
 
-[ "$TOMCAT_ROOT" = "" ] && TOMCAT_ROOT=$(dirname $0)
+[ -z "$TOMCAT_ROOT" ] && TOMCAT_ROOT=$(dirname $0)
 TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
 echo "Tomcat root: $TOMCAT_ROOT"
 
