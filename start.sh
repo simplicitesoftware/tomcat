@@ -63,6 +63,7 @@ then
 				java -jar ${JCCHOME}/jacococli.jar \
 					report ${JCCDESTFILE} \
 					--html ${JCCREPORTDIR} \
+					--xml ${JCCREPORTDIR}/jacoco.xml \
 					--sourcefiles ${TOMCAT_ROOT}/webapps/${TOMCAT_WEBAPP}/WEB-INF/src \
 					$CLS
 				RES=$?
@@ -260,7 +261,11 @@ then
 fi
 
 SYSPARAMS=$(env | grep '^SYSPARAM_' | sed "s/=/\|/;s/'/''/g" | awk -F\| '{ print "update m_system set sys_value2 = \x27"$2"\x27 where sys_code = \x27"substr($1, 10)"\x27;" }')
-[ ! -z "$SYSPARAMS" ] && SYSPARAMS="${SYSPARAMS}commit;"
+if [ ! -z "$SYSPARAMS" ]
+then
+	echo "WARNING: the possibility to force system parameters values in the database using SYSPARAM_* environment variables is *DEPRECATED* and will be removed in next major version"
+	SYSPARAMS="${SYSPARAMS}commit;"
+fi
 
 if [ -d $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP ]
 then
