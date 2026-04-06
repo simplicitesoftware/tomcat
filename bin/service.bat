@@ -210,7 +210,7 @@ set "JVM9_OPTIONS=%JVM9_OPTIONS%;--add-opens=java.rmi/sun.rmi.transport=ALL-UNNA
 set "JVM9_OPTIONS=%JVM9_OPTIONS%;--enable-native-access=ALL-UNNAMED"
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 11.0.20 Server - https://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 11.0.21 Server - https://tomcat.apache.org/" ^
     --DisplayName "Apache Tomcat 11.0 %SERVICE_NAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
