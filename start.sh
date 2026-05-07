@@ -14,7 +14,7 @@ then
 fi
 
 [ -z "$JAVA_HOME" ] && JAVA_HOME="/usr/lib/jvm/java"
-if [ ! -d $JAVA_HOME ]
+if [ ! -d "$JAVA_HOME" ]
 then
 	echo "ERROR: JAVA_HOME = $JAVA_HOME is not correctly configured" >&2
 	exit 1
@@ -25,8 +25,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 echo "User: $(whoami)"
 
 [ -z "$HOSTNAME" ] && export HOSTNAME=$(hostname)
-[ -z "$IP_ADDR" ] && export IP_ADDR=$(hostname -i)
-echo "Hostname: $HOSTNAME ($IP_ADDR)"
+echo "Hostname: $HOSTNAME"
 
 [ -z "$TOMCAT_ROOT" ] && TOMCAT_ROOT=$(dirname $0)
 TOMCAT_ROOT=$(realpath $TOMCAT_ROOT)
@@ -920,7 +919,6 @@ fi
 
 if [ "$CLUSTER" = "true" ]
 then
-	#export JAVA_OPTS="$JAVA_OPTS -Dtomcat.clusteraddress=$IP_ADDR"
 	grep -q '<!-- CLUSTER Cluster' $TOMCAT_ROOT/conf/server.xml
 	if [ $? = 0 -a -w $TOMCAT_ROOT/conf/server.xml -a -w $TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/META-INF/context.xml ]
 	then
