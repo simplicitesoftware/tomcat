@@ -208,12 +208,13 @@ fi
 [ ! -z "$TOMCAT_REMOTEIP_PORT_HEADER" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.port.header=$TOMCAT_REMOTEIP_PORT_HEADER"
 [ ! -z "$TOMCAT_REMOTEIP_PROTOCOL_HEADER" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.protocol.header=$TOMCAT_REMOTEIP_PROTOCOL_HEADER"
 [ ! -z "$TOMCAT_REMOTEIP_PROTOCOL_HEADER_HTTPSVALUE" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.protocol.header.https.value=$TOMCAT_REMOTEIP_PROTOCOL_HEADER_HTTPSVALUE"
-[ ! -z "$TOMCAT_REMOTEIP_PROXIES_HEADER" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.proxies.header=$TOMCAT_REMOTEIP_PROXIES_HEADER"
-[ ! -z "$TOMCAT_REMOTEIP_INTERNAL_PROXIES" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.internal.proxies=$TOMCAT_REMOTEIP_INTERNAL_PROXIES"
-[ ! -z "$TOMCAT_REMOTEIP_TRUSTED_PROXIES" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.trusted.proxies=$TOMCAT_REMOTEIP_TRUSTED_PROXIES"
 [ ! -z "$TOMCAT_REMOTEIP_REQUEST_ATTRIBUTES_ENABLED" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.request.attributes.enabled=$TOMCAT_REMOTEIP_REQUEST_ATTRIBUTES_ENABLED"
-[ ! -z "$TOMCAT_REMOTEIP_HTTP_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.http.server.port=$TOMCAT_REMOTEIP_HTTP_SERVER_PORT"
-[ ! -z "$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.https.server.port=$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT"
+[ ! -z "$TOMCAT_REMOTEIP_PROXIES_HEADER" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.proxies.header=$TOMCAT_REMOTEIP_PROXIES_HEADER"
+# TODO:
+#[ ! -z "$TOMCAT_REMOTEIP_INTERNAL_PROXIES" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.internal.proxies=$TOMCAT_REMOTEIP_INTERNAL_PROXIES"
+#[ ! -z "$TOMCAT_REMOTEIP_TRUSTED_PROXIES" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.trusted.proxies=$TOMCAT_REMOTEIP_TRUSTED_PROXIES"
+#[ ! -z "$TOMCAT_REMOTEIP_HTTP_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.http.server.port=$TOMCAT_REMOTEIP_HTTP_SERVER_PORT"
+#[ ! -z "$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.https.server.port=$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
