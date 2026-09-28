@@ -224,8 +224,15 @@ if [ "$DEV_MODE" = "true" ]
 then
 	echo ""
 	echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-	echo "ZZZ The platform is configured for development mode, this is not suitable for production ZZZ"
+	echo "ZZZ The platform is configured for development mode, this is not suitable for production"
 	echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+	if [ "$(java --list-modules | grep jdk.compiler)" = "" ]
+	then
+		echo ""
+		echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+		echo "ZZZ The JVM does not seems to be a JDK which does not suit some development mode features"
+		echo "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+	fi
 	echo ""
 	export JAVA_OPTS="$JAVA_OPTS -Dserver.devmode=true \
 -Dlsp.home=$TOMCAT_ROOT/webapps/$TOMCAT_WEBAPP/WEB-INF/lsp \
