@@ -215,6 +215,7 @@ fi
 #[ ! -z "$TOMCAT_REMOTEIP_TRUSTED_PROXIES" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.trusted.proxies=$TOMCAT_REMOTEIP_TRUSTED_PROXIES"
 #[ ! -z "$TOMCAT_REMOTEIP_HTTP_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.http.server.port=$TOMCAT_REMOTEIP_HTTP_SERVER_PORT"
 #[ ! -z "$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.https.server.port=$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT"
+[ ! -z "$SYSTEM_LANGUAGE" ] && JAVA_OPTS="$JAVA_OPTS -Dplatform.language=${SYSTEM_LANGUAGE}"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
