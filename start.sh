@@ -171,6 +171,7 @@ then
 fi
 
 export JAVA_OPTS="$JAVA_OPTS -server -Dserver.vendor=tomcat -Dserver.version=9 -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Duser.timezone=${TOMCAT_TIMEZONE:-${TZ:-$(date +%Z)}} -Dplatform.autoupgrade=true -Dtomcat.webapp=$TOMCAT_WEBAPP"
+[ ! -z "$SYSTEM_LANGUAGE" ] && JAVA_OPTS="$JAVA_OPTS -Ddefault.language=${SYSTEM_LANGUAGE}"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.adminport=${TOMCAT_ADMIN_PORT:-8005} -Dtomcat.httpport=${TOMCAT_HTTP_PORT:-8080} -Dtomcat.httpsport=${TOMCAT_HTTPS_PORT:-8443} -Dtomcat.httpredirectport=${TOMCAT_HTTPREDIRECTPORT:-443} -Dtomcat.ajpredirectport=${TOMCAT_AJPREDIRECTPORT:-443} -Dtomcat.jvmroute=${TOMCAT_JVMROUTE:-tomcat}"
 export JAVA_OPTS="$JAVA_OPTS -Dtomcat.maxhttpheadersize=${TOMCAT_MAXHTTPHEADERSIZE:-8192} -Dtomcat.maxthreads=${TOMCAT_MAXTHREADS:-200} -Dtomcat.maxconnections=${TOMCAT_MAXCONNECTIONS:-8192} -Dtomcat.maxpostsize=${TOMCAT_MAXPOSTSIZE:--1}"
 [ "$GZIP" = "true" -o "$TOMCAT_COMPRESSION" = "on" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.compression=on"
@@ -215,7 +216,6 @@ fi
 #[ ! -z "$TOMCAT_REMOTEIP_TRUSTED_PROXIES" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.trusted.proxies=$TOMCAT_REMOTEIP_TRUSTED_PROXIES"
 #[ ! -z "$TOMCAT_REMOTEIP_HTTP_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.http.server.port=$TOMCAT_REMOTEIP_HTTP_SERVER_PORT"
 #[ ! -z "$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.remoteip.https.server.port=$TOMCAT_REMOTEIP_HTTPS_SERVER_PORT"
-[ ! -z "$SYSTEM_LANGUAGE" ] && JAVA_OPTS="$JAVA_OPTS -Dplatform.language=${SYSTEM_LANGUAGE}"
 [ "$DEBUG" = "true" ] && export JAVA_OPTS="$JAVA_OPTS -Dplatform.debug=true"
 [ ${TOMCAT_JPDA_PORT:-0} -gt 0 ] && JPDA="true"
 [ "$JPDA" = "true" ] && export JPDA_ADDRESS=${TOMCAT_JPDA_HOST:-0.0.0.0}:${TOMCAT_JPDA_PORT:-8000}
@@ -255,7 +255,7 @@ fi
 [ "$TOMCAT_LOG_ENV" = "true" -o "$TOMCAT_LOG_ENV" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logenv=$TOMCAT_LOG_ENV"
 [ "$TOMCAT_LOG_PROPS" = "true" -o "$TOMCAT_LOG_PROPS" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.logprops=$TOMCAT_LOG_PROPS"
 [ "$TOMCAT_SAME_SITE_COOKIES" = "unset" -o "$TOMCAT_SAME_SITE_COOKIES" = "lax" -o "$TOMCAT_SAME_SITE_COOKIES" = "strict" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.samesitecookies=$TOMCAT_SAME_SITE_COOKIES"
-[ "$TOMCAT_SECURE_COOKIES" = "true" -o "$TOMCAT_SAME_SITE_COOKIES" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.securecookies=$TOMCAT_SECURE_COOKIES"
+[ "$TOMCAT_SECURE_COOKIES" = "true" -o "$TOMCAT_SECURE_COOKIES" = "false" ] && export JAVA_OPTS="$JAVA_OPTS -Dtomcat.securecookies=$TOMCAT_SECURE_COOKIES"
 [ ! -z "$SERVER_URL" ] && export JAVA_OPTS="$JAVA_OPTS -Dapplication.url=${SERVER_URL}"
 
 if [ ! -z "$JACOCO_MODULES" -a ! -z "$JCCHOME" -a ! -z "$JCCDESTFILE" ]
